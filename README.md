@@ -9,7 +9,7 @@ Start the Node server using the following commands:
 cd server
 node server.js
 ```
-To test the server, send a GET request to `https://node-angular-lgobinath.c9users.io:8081/api`
+To test the server, send a GET request to `https://esimps27-lab-5-esimps27.c9users.io:8081/api`
 
 > Note that the server is running on port `8081` because both Angular client and Node cannot run on same port. In this project we run Node on `8081` and Angular app on `8080`
 
@@ -66,9 +66,3 @@ To make the life easier, npm `start` command is modified in the `package.json` a
   ...
 }
 ```
-
-## Reference
- - [Angular HttpClient](https://angular.io/guide/http#httpclient)
- - [Angular Proxy Configuration](https://github.com/angular/angular-cli/blob/master/docs/documentation/stories/proxy.md)
-
-See the [commits](https://github.com/lgobinath/node-angular/commits/master) for step by step code changes.
