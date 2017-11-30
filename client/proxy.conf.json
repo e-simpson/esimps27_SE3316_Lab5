@@ -1,0 +1,8 @@
+{
+    "/api/*": {
+        "target": "https://esimps27-lab-5-esimps27.c9users.io:8081",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "info"
+    }
+}
