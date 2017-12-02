@@ -1,6 +1,36 @@
-h1 {
-    color: navy;
-    text-align: left;
+html {
+    background-color: #efefef
+}
+
+.appbar {
+    background-color: #e0e0e0;
     font-family: sans-serif;
-    padding-left: 18px;
+    padding: 0px;
+    padding-right: 30px;
+    padding-left: 30px;
+    content: "";
+    display: table;
+    clear: both;
+    width: 100%;
+}
+
+.barComponent {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.appbartitle {
+    color: grey;
+    background-color: #e0e0e0;
+    font-size: 3.2em;
+    font-family: sans-serif;
+    float: left;
+}
+
+#grad {
+    background: #4286f4;
+    background: -webkit-linear-gradient(left top, #4286f4, #835eff);
+    background: -o-linear-gradient(bottom right, #4286f4, #835eff);
+    background: -moz-linear-gradient(bottom right, #4286f4, #835eff);
+    background: linear-gradient(to bottom right, #4286f4, #835eff);
 }

@@ -3,22 +3,30 @@ import { NgModule } from '@angular/core';
 import {HttpClientModule} from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-// import { SampleComponent } from './sample/sample.component';
-import {SampleService} from './sample.service';
+
+import { LoginService } from './login.service';
+import { SharedDataService } from './shared-data.service';
+
 import { LoginComponent } from './login/login.component';
+import { WelcomeComponent } from './welcome/welcome.component';
+import { AppbarComponent } from './appbar/appbar.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    // SampleComponent
+    WelcomeComponent,
+    AppbarComponent,
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
   ],
-  providers: [SampleService],
+  providers: [
+    LoginService, 
+    SharedDataService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

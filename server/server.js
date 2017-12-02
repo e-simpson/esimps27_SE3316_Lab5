@@ -110,7 +110,7 @@ router.route('/user')
 .post(function(req, res) {
     User.find({email: req.body.email}, function(err, users){
         if (err) { return console.log(err);} 
-        if (users.length > 0) {res.json({"msg": "Sorry, an account with that email already exists."}); return;}
+        if (users.length > 0) {res.json({"message": "Sorry, an account with that email already exists."}); return;}
         
         var user = new User();            
         user.email = req.body.email; 
@@ -120,7 +120,7 @@ router.route('/user')
             user.password = hash;
             user.save(function(err) {
                 if (err){ res.send(err);}
-                res.json({"msg": "success"})
+                res.json({"message": "An email has been sent to " + user.email + ". Please verify your account."})
                 console.log('[NEW USER] ' + user.email + ', unhashedpass: ' + req.body.password);
                 sendVerificationEmail(user.email);
             });
@@ -137,7 +137,7 @@ router.route('/user')
 .delete(function(req, res) {
     User.remove({}, function(err) {
             if (err) { console.log(err);} 
-            else { res.end('success');}
+            else { res.json({"message": "success"}); }
         }
     );
 });
@@ -154,6 +154,23 @@ router.get('/verify/:email', function(req,res){
     });
 })
 
+router.post('/login', function(req,res){
+    console.log("[LOGIN ATTEMPT] email: " + req.body.email + ", pass: " + req.body.password);
+    User.findOne({email: req.body.email}, function(err, user){
+        if (err) { return console.log(err);} 
+        if (!user) { res.json({"message": "Invalid email. Please try again."}); return; }
+        if (user.activated == false) { res.json({"message": "Unverified email. Sending another verification email to " + req.body.email + "."}); sendVerificationEmail(req.body.email); return;};
+        
+        bcrypt.compare(req.body.password, user.password, function(err, success) {
+            if (err){ res.send(err);}
+            if (success) {
+                res.json({"message": "Sign in success."});
+                console.log("[LOGIN SUCCESS] email: " + req.body.email + ", pass: " + req.body.password);
+            }
+            else {res.json({"message": "Incorrect password."});}
+        });
+    });
+});
 
 
 // router.post('/login', function(req, res, next) {
