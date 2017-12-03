@@ -15,7 +15,7 @@ export class ImagesComponent implements OnInit {
   
   currentPublicImages = [];
   currentPrivateImages = [];
-  currentOpenCollection = -1;
+  currentOpenCollection = 0;
 
   capitalizeName(name) {
     return name.replace(/\b(\w)/g, s => s.toUpperCase());

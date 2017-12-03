@@ -1,1 +1,6 @@
-<div style="padding: 80px; padding-bottom:0px; padding-top:60px; font-size:2.3em; color: grey;">Welcome {{this._sharedData.getUsername()}},</div>
+<div *ngIf="this._sharedData.getSignInState()" style="padding: 80px; padding-bottom:0px; padding-top:50px; font-size:2.3em; color: grey;">Welcome {{this._sharedData.getUsername()}},</div>
+
+<div *ngIf="!this._sharedData.getSignInState()">
+    <div style="padding: 80px; padding-bottom:0px; padding-top:50px; font-size:2.3em; color: #606060;">About</div>
+    <div style="padding: 80px; padding-bottom:0px; padding-top:0px; font-size:1.3em; color: #606060;">View, collect, and rate the latest images from NASA. Create an Account to create your own collections and rate others.</div>
+</div>

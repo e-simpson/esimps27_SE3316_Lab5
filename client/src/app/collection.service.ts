@@ -18,4 +18,8 @@ export class CollectionService {
           callback_fun(data);
       });
     }
+    
+    sendCollectionRate(passedOwner, passedName, passedDesc, passedAccess){
+      
+    }
 }

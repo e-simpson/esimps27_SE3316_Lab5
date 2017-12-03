@@ -1,5 +1,5 @@
 <div style="width: 100%; background-color: #e8e8e8; padding-top: 80px; padding-bottom: 80px;">
-    <div class="container" style="width: 500px; background-color: white; padding-top: 20px; border-radius: 10px; box-shadow: 0 5px 5px 1px rgba(0,0,0,0.1);">
+    <div class="container paper" style="width: 500px;">
         <div style="text-align: right; padding-right: 20px; padding-bottom: 60px;">
             <button class="waves-effect waves-light btn-flat" (click)="toggleSignIn()">Hide</button>
         </div>
@@ -23,10 +23,10 @@
                 <button class="waves-effect waves-light btn-flat" (click)="toggleCreateAccount()">{{createAccountButtonText}}</button>
             </div>
 
-            <div style="text-align: center; padding-top: 80px; padding-bottom: 80px;">
+            <div style="text-align: center; padding-top: 80px; padding-bottom: 60px;">
                 <button *ngIf="!creatingAccount" class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitLoginForm(email.value, pass.value)">Submit</button>
                 <button *ngIf="creatingAccount" class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitLoginForm(email.value, pass.value, nam.value)">Create</button>
-                <br><br> {{response}}
+                <br><br>{{response}}
             </div>
         </div>
     </div>
