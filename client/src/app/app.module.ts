@@ -15,6 +15,7 @@ import { LoginComponent } from './login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { AppbarComponent } from './appbar/appbar.component';
 import { ImagesComponent } from './images/images.component';
+import { CollectionCreatorComponent } from './collection-creator/collection-creator.component';
 
 //third party
 // import { StarRatingModule } from 'angular-star-rating';
@@ -27,6 +28,7 @@ import { ImagesComponent } from './images/images.component';
     WelcomeComponent,
     AppbarComponent,
     ImagesComponent,
+    CollectionCreatorComponent,
   ],
   imports: [
     BrowserModule,

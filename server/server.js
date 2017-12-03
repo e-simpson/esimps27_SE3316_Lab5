@@ -167,13 +167,13 @@ router.route('/image')
         collection.owner = req.body.owner; 
         collection.name= req.body.name;
         collection.access = req.body.access;
-        collection.images = JSON.parse(req.body.images);
-        collection.totalrate = req.body.totalrate;
-        collection.nrates = req.body.nrates;
+        if (req.body.images) {collection.images = JSON.parse(req.body.images);}
+        if (req.body.totalrate) {collection.totalrate = req.body.totalrate;}
+        if (req.body.nrates) {collection.nrates = req.body.nrates;}
         collection.desc = req.body.desc;
         collection.save(function(err) {
             if (err){ res.send(err);}
-            res.json({"message": "success"})
+            res.json({"message": "success", "function": "newCollection", "code" : 200})
             console.log('[NEW COLLECTION] ' + collection.name + " by " + collection.owner);
         });
 })

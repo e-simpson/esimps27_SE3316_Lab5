@@ -72,10 +72,10 @@ export class ImagesComponent implements OnInit {
   }
   
   loadImages(){
-    this._collectionService.getImages(this.getPublicImages.bind(this));
+    this._collectionService.getCollections(this.getPublicImages.bind(this));
     
     if (this._sharedData.getSignInState() == true){
-      this._collectionService.getImages(this.getPrivateImages.bind(this));
+      this._collectionService.getCollections(this.getPrivateImages.bind(this));
     }
   }
   

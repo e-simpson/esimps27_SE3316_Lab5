@@ -6,5 +6,8 @@
 <app-login *ngIf="this._sharedData.getSignInDisplayed() && !this._sharedData.getSignInState()"></app-login>
 
 <app-welcome></app-welcome>
+
+<app-collection-creator *ngIf="this._sharedData.getSignInState()"></app-collection-creator>
+
 <app-images></app-images>
 

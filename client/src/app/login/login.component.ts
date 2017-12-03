@@ -69,9 +69,7 @@ export class LoginComponent implements OnInit {
     }
   }
   
-  resetResponse(){
-    this.response = '';
-  }
+  resetResponse(){ this.response = ''; }
   
   onResponse(res, email) { 
     this.response = res.message;
