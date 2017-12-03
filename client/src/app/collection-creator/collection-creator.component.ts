@@ -23,7 +23,7 @@ export class CollectionCreatorComponent implements OnInit {
     else{ this.open = true;}
   }
   
-  toggleAcess(){
+  toggleAccess(){
     this.resetResponse();
     if (this.access == "private"){ this.access = "public";}
     else{ this.access = "private";}
