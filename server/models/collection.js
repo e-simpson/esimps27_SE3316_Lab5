@@ -1,0 +1,13 @@
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+
+var collectionSchema = new Schema({
+    owner: String,
+    name: String,
+    totalrate: {type: Number, default: 0},
+    nrates: {type: Number, default: 0},
+    access: {type: String, default: "public"},
+    images: []
+});
+
+module.exports = mongoose.model('Collection', collectionSchema)

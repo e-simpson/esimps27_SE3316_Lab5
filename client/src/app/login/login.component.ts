@@ -12,7 +12,6 @@ import { SharedDataService } from '../shared-data.service'
 export class LoginComponent implements OnInit {
   response = '';
   loginTitle = "Sign in";
-  submitButtonText = "Submit";
   createAccountButtonText = "Create account";
   creatingAccount = false;
   
@@ -33,13 +32,11 @@ export class LoginComponent implements OnInit {
   toggleCreateAccount(){
     if (this.creatingAccount == true){
       this.loginTitle = "Sign in"
-      this.submitButtonText = "Submit"
       this.createAccountButtonText = "Create account"
       this.creatingAccount = false
     }
     else {
       this.loginTitle = "Create an account"
-      this.submitButtonText = "Create"
       this.createAccountButtonText = "Cancel create account"
       this.creatingAccount = true
     }
@@ -50,7 +47,11 @@ export class LoginComponent implements OnInit {
     return re.test(email);
   }
 
-  submitLoginForm(email, pass) {
+  submitLoginForm(email, pass, name) {
+    if (name == "" && this.creatingAccount){
+      this.response = "Please enter a name.";
+      return;
+    }
     if (email == "" || !this.validateEmail(email)){
       this.response = "Please enter a valid email.";
       return;
@@ -62,11 +63,9 @@ export class LoginComponent implements OnInit {
     
     if (this.creatingAccount == false){
         this._loginService.postLogin(email, pass, this.onResponse.bind(this));
-        this._sharedData.setUsername(email);
     }
     else if (this.creatingAccount == true) {
-        this._loginService.postCreateAccount(email, pass, this.onResponse.bind(this));
-        this.toggleCreateAccount();
+        this._loginService.postCreateAccount(email, pass, name, this.onResponse.bind(this));
     }
   }
   
@@ -74,10 +73,14 @@ export class LoginComponent implements OnInit {
     this.response = '';
   }
   
-  onResponse(res: string) { 
-    this.response = res;
-    if (res == "Sign in success."){
+  onResponse(res, email) { 
+    this.response = res.message;
+    if (res.function == "login" && res.code == 200){
       this._sharedData.setSignInState(true);
+      this._sharedData.setUsername(email);
+    }
+    if (res.function == "newAccount" && res.code == 200){
+      this.toggleCreateAccount();
     }
   }
 }

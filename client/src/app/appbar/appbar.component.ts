@@ -29,6 +29,17 @@ export class AppbarComponent implements OnInit {
       this._sharedData.setSignInDisplayed(true)
     }
   }
+  
+  toggleSignInState(){
+    if (this._sharedData.getSignInState() == true){
+      this._sharedData.setSignInState(false);
+      this._sharedData.setSignInDisplayed(false);
+      this._sharedData.username = "Guest";
+    }
+    else{
+      this._sharedData.setSignInState(true);
+    }
+  }
 
   ngOnInit() {
   }

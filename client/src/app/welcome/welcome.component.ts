@@ -8,7 +8,7 @@ import { SharedDataService } from '../shared-data.service'
 })
 
 export class WelcomeComponent implements OnInit {
-
+  
   constructor(private _sharedData: SharedDataService) { }
 
   ngOnInit() {

@@ -9,13 +9,13 @@ export class LoginService {
     
     postLogin(passedEmail, passedPass, callback_fun) {
       this.http.post('/api/login', {email: passedEmail, password: passedPass}).subscribe(data => {
-          callback_fun(data['message']);
+          callback_fun(data, passedEmail);
       });
     }
     
-    postCreateAccount(passedEmail, passedPass, callback_fun) {
-      this.http.post('/api/user', {email: passedEmail, password: passedPass}).subscribe(data => {
-          callback_fun(data['message']);
+    postCreateAccount(passedEmail, passedPass, passedName, callback_fun) {
+      this.http.post('/api/user', {email: passedEmail, password: passedPass, name: passedName}).subscribe(data => {
+          callback_fun(data, passedEmail);
       });
     }
 }

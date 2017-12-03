@@ -1,27 +1,36 @@
-<div class="container" style="width: 500px; background-color: white; margin-top: 100px; padding-top: 20px; border-radius: 10px; box-shadow: 0 3px 5px 1px rgba(0,0,0,0.1);">
-    <div style="text-align: right; padding-right: 20px; padding-bottom: 60px;">
+<div style="width: 100%; background-color: #e8e8e8; padding-top: 80px; padding-bottom: 80px;">
+    <div class="container" style="width: 500px; background-color: white; padding-top: 20px; border-radius: 10px; box-shadow: 0 5px 5px 1px rgba(0,0,0,0.1);">
+        <div style="text-align: right; padding-right: 20px; padding-bottom: 60px;">
             <button class="waves-effect waves-light btn-flat" (click)="toggleSignIn()">Hide</button>
-    </div>
-        
-    <div style = "padding-right: 80px; padding-left: 80px;">
-        <a style="font-size:3em; color: grey; padding-bottom: 80px;">{{loginTitle}}</a>
-    
-        <br><br><br>
-        <input type="text" placeholder="Enter Email" (click)="resetResponse()" name="email" #email required>
-        
-        <br><br><br>
-        <input type="password" placeholder="Enter Password" (click)="resetResponse()" name="pass" #pass required>
-        
-        <div style="text-align: center; padding-top: 10px; padding-bottom: 20px;">
-            <button class="waves-effect waves-light btn-flat" (click)="toggleCreateAccount()">{{createAccountButtonText}}</button>
         </div>
-        
-        <div style="text-align: center; padding-top: 80px; padding-bottom: 80px;">
-            <button class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitLoginForm(email.value, pass.value)"> {{submitButtonText}}</button>
-            <br><br>
-            {{response}}
-        </div>
-    </div>
-</div>
 
-<img style="width: 80px; display: block; margin: 0 auto; padding-bottom: 20px;" src="assets/nasaicon.png">
+        <div style="padding-right: 80px; padding-left: 80px;">
+            <a style="font-size:3em; color: grey; padding-bottom: 80px;">{{loginTitle}}</a>
+            
+            <br><br><br>
+            
+            <div *ngIf="creatingAccount">
+                <input type="text" placeholder="Enter Name" (click)="resetResponse()" name="namefield" #namefield required>
+                <br><br><br>
+            </div>
+            
+            <input type="text" placeholder="Enter Email" (click)="resetResponse()" name="email" #email required>
+
+            <br><br><br>
+            <input type="password" placeholder="Enter Password" (click)="resetResponse()" name="pass" #pass required>
+
+            
+            <div style="text-align: center; padding-top: 10px; padding-bottom: 20px;">
+                <button class="waves-effect waves-light btn-flat" (click)="toggleCreateAccount()">{{createAccountButtonText}}</button>
+            </div>
+
+            <div style="text-align: center; padding-top: 80px; padding-bottom: 80px;">
+                <button *ngIf="!creatingAccount" class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitLoginForm(email.value, pass.value)">Submit</button>
+                <button *ngIf="creatingAccount" class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitLoginForm(email.value, pass.value, name.value)">Create</button>
+                <br><br> {{response}}
+            </div>
+        </div>
+    </div>
+
+    <!--<img style="width: 80px; display: block; margin: 0 auto; padding: 20px;" src="assets/nasaicon.png">-->
+</div>

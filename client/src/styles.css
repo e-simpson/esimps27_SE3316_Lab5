@@ -13,12 +13,10 @@ html {
     clear: both;
     width: 100%;
 }
-
 .barComponent {
     display: table-cell;
     vertical-align: middle;
 }
-
 .appbartitle {
     color: grey;
     background-color: #e0e0e0;
@@ -26,6 +24,7 @@ html {
     font-family: sans-serif;
     float: left;
 }
+
 
 #grad {
     background: #4286f4;

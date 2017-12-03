@@ -22,6 +22,7 @@ app.use(cors());
 
 //======= MODEL IMPORTS ===============
 var User = require("./models/user")
+var Collection = require("./models/collection")
 //=====================================
 
 
@@ -120,7 +121,7 @@ router.route('/user')
             user.password = hash;
             user.save(function(err) {
                 if (err){ res.send(err);}
-                res.json({"message": "An email has been sent to " + user.email + ". Please verify your account."})
+                res.json({"message": "An email has been sent to " + user.email + ". Please verify your account.", "code": 200, "function": "newAccount"})
                 console.log('[NEW USER] ' + user.email + ', unhashedpass: ' + req.body.password);
                 sendVerificationEmail(user.email);
             });
@@ -164,12 +165,42 @@ router.post('/login', function(req,res){
         bcrypt.compare(req.body.password, user.password, function(err, success) {
             if (err){ res.send(err);}
             if (success) {
-                res.json({"message": "Sign in success."});
+                res.json({"message": "Sign in success.", "code": 200, "function": "login"});
                 console.log("[LOGIN SUCCESS] email: " + req.body.email + ", pass: " + req.body.password);
             }
             else {res.json({"message": "Incorrect password."});}
         });
     });
+});
+
+router.route('/image')
+.get(function(req, res) {
+    Collection.find(function(err, images) {
+        console.log('[SENDING] ' + images.length + ' image collections..');
+        if (err) { console.log("error: " + err); res.send(err);}
+        res.send(images);
+    });
+})
+.post(function(req,res){
+    var collection = new Collection();            
+        collection.owner = req.body.owner; 
+        collection.name= req.body.name;
+        collection.access = req.body.access;
+        collection.images = JSON.parse(req.body.images);
+        collection.totalrate = req.body.totalrate;
+        collection.nrates = req.body.nrates;
+        collection.save(function(err) {
+            if (err){ res.send(err);}
+            res.json({"message": "success"})
+            console.log('[NEW COLLECTION] ' + collection.name + " by " + collection.owner);
+        });
+})
+.delete(function(req, res) {
+    Collection.remove({}, function(err) {
+            if (err) { console.log(err);} 
+            else { res.json({"message": "success"}); }
+        }
+    );
 });
 
 

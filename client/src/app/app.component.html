@@ -3,5 +3,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.2/js/materialize.min.js"></script>
 
 <app-appbar></app-appbar>
-<app-welcome></app-welcome>
 <app-login *ngIf="this._sharedData.getSignInDisplayed() && !this._sharedData.getSignInState()"></app-login>
+
+<app-welcome></app-welcome>
+<app-images></app-images>
+<star-rating-comp [starType]="'svg'" [rating]="2.63" ></star-rating-comp>
