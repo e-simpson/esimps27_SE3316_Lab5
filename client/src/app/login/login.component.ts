@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
       this.response = "Please enter a name.";
       return;
     }
-    if (email == "" || !this.validateEmail(email)){
+    else if (email == "" || !this.validateEmail(email)){
       this.response = "Please enter a valid email.";
       return;
     }
@@ -78,6 +78,9 @@ export class LoginComponent implements OnInit {
     if (res.function == "login" && res.code == 200){
       this._sharedData.setSignInState(true);
       this._sharedData.setUsername(email);
+      this._sharedData.setEmail(email);
+      localStorage.setItem('token', res.token);
+      window.location.reload();
     }
     if (res.function == "newAccount" && res.code == 200){
       this.toggleCreateAccount();

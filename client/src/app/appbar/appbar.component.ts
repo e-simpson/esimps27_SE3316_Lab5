@@ -35,6 +35,9 @@ export class AppbarComponent implements OnInit {
       this._sharedData.setSignInState(false);
       this._sharedData.setSignInDisplayed(false);
       this._sharedData.username = "Guest";
+      this._sharedData.email = "Guest";
+      localStorage.clear();
+      window.location.reload();
     }
     else{
       this._sharedData.setSignInState(true);

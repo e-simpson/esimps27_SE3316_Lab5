@@ -8,9 +8,8 @@
             <a style="font-size:3em; color: grey; padding-bottom: 80px;">{{loginTitle}}</a>
             
             <br><br><br>
-            
-            <div *ngIf="creatingAccount">
-                <input type="text" placeholder="Enter Name" (click)="resetResponse()" name="namefield" #namefield required>
+            <div [hidden]="!creatingAccount">
+                <input type="text" placeholder="Enter Name" (click)="resetResponse()" name="nam" #nam required>
                 <br><br><br>
             </div>
             
@@ -26,7 +25,7 @@
 
             <div style="text-align: center; padding-top: 80px; padding-bottom: 80px;">
                 <button *ngIf="!creatingAccount" class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitLoginForm(email.value, pass.value)">Submit</button>
-                <button *ngIf="creatingAccount" class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitLoginForm(email.value, pass.value, name.value)">Create</button>
+                <button *ngIf="creatingAccount" class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitLoginForm(email.value, pass.value, nam.value)">Create</button>
                 <br><br> {{response}}
             </div>
         </div>

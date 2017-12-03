@@ -13,15 +13,15 @@ export class ImagesComponent implements OnInit {
 
   constructor(private _collectionService: CollectionService, private _sharedData: SharedDataService) {}
   
-  currentImages = [];
+  currentPublicImages = [];
+  currentPrivateImages = [];
   currentOpenCollection = -1;
 
   capitalizeName(name) {
     return name.replace(/\b(\w)/g, s => s.toUpperCase());
   }
 
-  getNames(images){
-    
+  getPublicImages(images){
     var list = [];
         
     var count = 0;
@@ -43,11 +43,40 @@ export class ImagesComponent implements OnInit {
       return  obj2.rating - obj1.rating;
     });
     
-    this.currentImages = list;
+    this.currentPublicImages = list;
+  }
+  
+  getPrivateImages(images){
+    var list = [];
+        
+    var count = 10;
+    images.forEach(element => {
+      if (element.access == "private" && element.owner == this._sharedData.getEmail()){
+        // if (count>=20){ return;}
+        count++;
+        element.rating = Math.round((element.totalrate / element.nrates)*10)/10;
+        if (!element.rating) { element.rating = 0; }
+        element.name = this.capitalizeName(element.name);
+        element.number = count;
+        element.length = element.images.length;
+        element.images = element.images;
+        list.push(element);
+      }
+    });
+    
+    list.sort(function(obj1, obj2){
+      return  obj2.rating - obj1.rating;
+    });
+    
+    this.currentPrivateImages = list;
   }
   
   loadImages(){
-    this._collectionService.getImages(this.getNames.bind(this));
+    this._collectionService.getImages(this.getPublicImages.bind(this));
+    
+    if (this._sharedData.getSignInState() == true){
+      this._collectionService.getImages(this.getPrivateImages.bind(this));
+    }
   }
   
   openCollection(collectionNumber){

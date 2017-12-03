@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var nodemailer = require("nodemailer");
+var jwt = require("jsonwebtoken")
 //=====================================
 
 
@@ -27,9 +28,9 @@ var Collection = require("./models/collection")
 
 
 //======= FUNCTIONS ===================
-var sendVerificationEmail = function(email) {
+var sendVerificationEmail = function(email, token) {
     console.log("[EMAILING] " + email + " for verification..")
-    var link = "https://esimps27-lab-5-esimps27.c9users.io:8081/api/verify/" + email;
+    var link = "https://esimps27-lab-5-esimps27.c9users.io:8081/api/verify/" + token;
     nodemailer.createTestAccount((err, account) => {
         if (err) {return console.log(err);}
         
@@ -48,7 +49,9 @@ var sendVerificationEmail = function(email) {
             to: email,
             subject: 'Verify your email!',
             // text: 'Hello! \n https://esimps27-lab-5-esimps27.c9users.io/api/verify/',
-            html: '<h1 style="font-size:6em;">Welcome,</h1> <a href=' + link + ' style="color: #009dff; font-size:2em; text-align: center; margin: auto;">Complete verification</a>'
+            html: '<h1 style="font-size:4em;">Welcome! </h1>'
+            + '<a href=' + link + ' style="color: #009dff; font-size:2em; text-align: center; margin: auto;">Click here to verify your email</a>'
+            + '<br><br><h1 style = "color: #bababa; font-size: 2.2em; padding-top: 30px; font-family: sans-serif; float: left;">NASA Gallery</h1>',
         };
     
         transporter.sendMail(mail, (error, info) => {
@@ -57,45 +60,6 @@ var sendVerificationEmail = function(email) {
         });
     });
 };
-
-var checkUserExistence = function(passedEmail, callback){
-    return User.find({email: passedEmail}, function(err, users){
-        if (err) { return console.log(err);} 
-        if (users.length > 0) {return true;}
-        console.log(users.length)
-        return false;
-    });
-}
-
-var activateEmail = function(passedEmail){
-    var r = -2;
-    User.findOne({email: passedEmail}, function(err, user){
-        if (err) { return console.log(err);} 
-        if (checkUserExistence(passedEmail)){r = -2; return;}
-        if (user.activated == true) {r = -1; return;};
-        user.activated = true;
-        user.save();
-        r = 1;
-    });
-    return r;
-}
-
-var createUser = function(email, password){
-    var success = false;
-    var user = new User();            
-    user.email = email; 
-    user.activated = false;
-    bcrypt.hash(password, 10, function(err, hash){
-        if (err) { return console.log(err);} 
-        user.password = hash;
-        user.save(function(err) {
-            if (err) { return console.log(err);} 
-            console.log('[NEW USER] ' + user.email + ', unhashedpass: ' + password);
-            sendVerificationEmail(user.email);
-        });
-    });
-    return false;
-}
 
 var wrapHtmlServerResponse = function(message){
     return ('<h1 style="font-family: sans-serif; font-size:2em; text-align: center; padding-top: 100px; margin: auto;">' + message + '</h1>');
@@ -116,6 +80,8 @@ router.route('/user')
         var user = new User();            
         user.email = req.body.email; 
         user.activated = false;
+        user.name = req.body.name;
+        user.token = jwt.sign({exp: Math.floor(Date.now() / 1000) + (60 * 60), data: user.email}, 'tokenmaster9000');
         bcrypt.hash(req.body.password, 10, function(err, hash){
             if (err){ res.send(err);}
             user.password = hash;
@@ -123,7 +89,7 @@ router.route('/user')
                 if (err){ res.send(err);}
                 res.json({"message": "An email has been sent to " + user.email + ". Please verify your account.", "code": 200, "function": "newAccount"})
                 console.log('[NEW USER] ' + user.email + ', unhashedpass: ' + req.body.password);
-                sendVerificationEmail(user.email);
+                sendVerificationEmail(user.email, user.token);
             });
         });
     });
@@ -143,15 +109,15 @@ router.route('/user')
     );
 });
 
-router.get('/verify/:email', function(req,res){
-    User.findOne({email: req.params.email}, function(err, user){
+router.get('/verify/:token', function(req,res){
+    User.findOne({token: req.params.token}, function(err, user){
         if (err) { return console.log(err);} 
-        if (!user) { res.end(wrapHtmlServerResponse('No account with email ' + req.params.email + ' exists. \nWhat are you doing here?\n:o')); return; }
-        if (user.activated == true) { res.end(wrapHtmlServerResponse('Hmm.. ' + req.params.email + ' has already been verified.')); return;};
+        if (!user) { res.end(wrapHtmlServerResponse('No account with that email exists. \nWhat are you doing here?\n:o')); return; }
+        if (user.activated == true) { res.end(wrapHtmlServerResponse('Hmm.. ' + user.email + ' has already been verified.')); return;};
         user.activated = true;
         user.save();
-        console.log("[VERIFICATION] " + req.params.email + " has verified by email..");
-        res.end(wrapHtmlServerResponse('Thanks ' + req.params.email + '! You have been verified.'));
+        console.log("[VERIFICATION] " + user.email + " has verified by token..");
+        res.end(wrapHtmlServerResponse('Thanks ' + user.email + '! You have been verified.'));
     });
 })
 
@@ -160,16 +126,31 @@ router.post('/login', function(req,res){
     User.findOne({email: req.body.email}, function(err, user){
         if (err) { return console.log(err);} 
         if (!user) { res.json({"message": "Invalid email. Please try again."}); return; }
-        if (user.activated == false) { res.json({"message": "Unverified email. Sending another verification email to " + req.body.email + "."}); sendVerificationEmail(req.body.email); return;};
+        if (user.activated == false) { 
+            res.json({"message": "Unverified email. Sending another verification email to " + req.body.email + "."}); 
+            sendVerificationEmail(user.email, user.token); 
+            return;
+        };
         
         bcrypt.compare(req.body.password, user.password, function(err, success) {
             if (err){ res.send(err);}
             if (success) {
-                res.json({"message": "Sign in success.", "code": 200, "function": "login"});
+                user.token = jwt.sign({exp: Math.floor(Date.now() / 1000) + (60 * 60), data: user.email}, 'tokenmaster9000');
+                user.save();
+                res.json({"message": "Sign in success.", "code": 200, "function": "login", "token": user.token});
                 console.log("[LOGIN SUCCESS] email: " + req.body.email + ", pass: " + req.body.password);
             }
             else {res.json({"message": "Incorrect password."});}
         });
+    });
+});
+
+router.post('/auth', function(req,res){
+    console.log("[AUTH ATTEMPT] token: " + req.body.token);
+    User.findOne({token: req.body.token}, function(err, user){
+        if (err) { return console.log(err);} 
+        if (!user) { res.json({"message": "Invalid email. Please try again."}); return; }
+        res.json({"message": "success", "code": 200, "function": "login", "email": user.email, "name": user.name});
     });
 });
 
@@ -245,12 +226,6 @@ router.use(function(req, res, next) {
 
 
 app.use('/api', router);
-
-
-
-
-
-
 
 
 
