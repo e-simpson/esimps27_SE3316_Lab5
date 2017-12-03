@@ -7,6 +7,7 @@ var collectionSchema = new Schema({
     totalrate: {type: Number, default: 0},
     nrates: {type: Number, default: 0},
     access: {type: String, default: "public"},
+    desc: {type: String, default: ""},
     images: []
 });
 

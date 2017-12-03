@@ -21,7 +21,7 @@ export class ImagesComponent implements OnInit {
   }
 
   getNames(images){
-    console.log(JSON.stringify(images));
+    
     var list = [];
         
     var count = 0;
@@ -34,7 +34,7 @@ export class ImagesComponent implements OnInit {
         element.name = this.capitalizeName(element.name);
         element.number = count;
         element.length = element.images.length;
-        element.images = JSON.parse(element.images);
+        element.images = element.images;
         list.push(element);
       }
     });

@@ -17,7 +17,7 @@ import { AppbarComponent } from './appbar/appbar.component';
 import { ImagesComponent } from './images/images.component';
 
 //third party
-import { StarRatingModule } from 'angular-star-rating';
+// import { StarRatingModule } from 'angular-star-rating';
 
 
 @NgModule({
@@ -31,7 +31,7 @@ import { StarRatingModule } from 'angular-star-rating';
   imports: [
     BrowserModule,
     HttpClientModule,
-    StarRatingModule.forRoot()
+    // StarRatingModule.forRoot()
   ],
   providers: [
     LoginService, 

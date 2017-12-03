@@ -7,10 +7,21 @@
         <a style="font-size:2em; color: black; text-decoration: underline; color: #325fc9; cursor: pointer;" (click)="openCollection(collection.number)">{{collection.name}}</a>
         <a style="font-size:2em; padding-left: 20px; color: grey;">{{collection.rating}} Stars</a>
         <a style="font-size:2em; color: #c9c9c9; float:right;">{{collection.length}} IMAGES</a>
+        <h6>{{collection.desc}}</h6>
         <h6>by {{collection.owner}}</h6>
         <div *ngIf="currentOpenCollection == collection.number">
-            <div *ngFor="let image of collection.images">
-                <img class="materialboxed" width="200" style = "padding-top: 20px;" src={{image}}>
+            <div *ngFor="let image of collection.images" style="margin: auto; padding-top: 20px;">
+                <div class="card">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        <a href={{image}} target="_blank"><img  src={{image}}></a>
+                    </div>
+                    <div class="card-content">
+                        Card Title
+                    </div>
+                    <div class="card-action">
+                        <a href={{image}} target="_blank" style="color: red;">Open full image in new window</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

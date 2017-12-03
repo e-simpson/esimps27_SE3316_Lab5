@@ -26,6 +26,22 @@ html {
 }
 
 
+.column {
+    float: left;
+    width: 50%;
+}
+
+.column img {
+    width: 100%;
+}
+
+.row {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
 #grad {
     background: #4286f4;
     background: -webkit-linear-gradient(left top, #4286f4, #835eff);

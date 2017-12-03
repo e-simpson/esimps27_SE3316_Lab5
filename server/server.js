@@ -189,6 +189,7 @@ router.route('/image')
         collection.images = JSON.parse(req.body.images);
         collection.totalrate = req.body.totalrate;
         collection.nrates = req.body.nrates;
+        collection.desc = req.body.desc;
         collection.save(function(err) {
             if (err){ res.send(err);}
             res.json({"message": "success"})
@@ -242,10 +243,6 @@ router.use(function(req, res, next) {
     next();
 });
 
-
-router.get('/', function(req, res) {
-    res.json({ message: 'Hello World' });
-});
 
 app.use('/api', router);
 
