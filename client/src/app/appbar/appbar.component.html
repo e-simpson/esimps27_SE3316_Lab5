@@ -28,27 +28,35 @@
 </div>
 
 
-
 <div *ngIf="searchResults.length > 0" style="padding: 40px; background-color: #e8e8e8">
     <a style="font-size:2.3em; color: #fc3d21;">{{this.searchResults.length}} Results</a>
     <button class="waves-effect waves-light btn-flat" style="margin-top:10px; color: #fc3d21; float: right;" type="submit" (click)="resetSearch()">Close search results</button>
 
-    <div *ngFor="let result of searchResults" style="padding-top: 40px;">
-        <div class="card">
-            <div class="card-image">
-                <a href={{result.link}} target="_blank"><img  class="materialboxed" src={{result.link}}></a>
-            </div>
-            <div class="card-content">
-                <a style="font-size:2em; color: black;">{{result.title}}</a>
-                <a style="font-size:2em; color: #c9c9c9; float:right;">{{result.date}}</a>
-                <h6>{{result.desc}}</h6>
-            </div>
-            <div class="card-action">
-                <a target="_blank" href={{result.link}}>
-                    <button class = "waves-effect waves-light btn-flat" style="color: red;">Open full image in new window</button>
-                </a>
-            </div>
+    <div style="float:center; padding:20px;" class="row">
+        <div *ngFor="let number of pagesArray" style="width:50px; padding-left: 20px; padding-left: 20px" class="col s2">
+            <button *ngIf="number == this.currentPage" class="waves-effect waves-light btn-flat col" style="color: #fc3d21; font-size:1.3em;" type="submit" (click)="changeSearchPage(number)">[{{number}}]</button>
+            <button *ngIf="number != this.currentPage" class="waves-effect waves-light btn-flat col" type="submit" (click)="changeSearchPage(number)">{{number}}</button>
         </div>
     </div>
 
+
+    <div *ngFor="let result of (searchResults.slice((this.currentPage-1)*10, (this.currentPage)*10))">
+        <div class="card">
+            <div class="col s12">
+                <div class="card-image">
+                    <a href={{result.link}} target="_blank"><img  class="materialboxed" src={{result.link}}></a>
+                </div>
+                <div class="card-content">
+                    <a style="font-size:2em; color: black;">{{result.title}}</a>
+                    <a style="font-size:2em; color: #c9c9c9; float:right;">{{result.date}}</a>
+                    <h6>{{result.desc}}</h6>
+                </div>
+                <div class="card-action">
+                    <a target="_blank" href={{result.link}}>
+                    <button class = "waves-effect waves-light btn-flat" style="color: red;">Open full image in new window</button>
+                </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

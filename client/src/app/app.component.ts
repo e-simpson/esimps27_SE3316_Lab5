@@ -12,7 +12,7 @@ export class AppComponent {
     constructor(private _sharedData: SharedDataService, private _loginService: LoginService) {  }
     
     ngOnInit(){
-      this._loginService.authenticateToken( this.authenticationResponse.bind(this));
+      // this._loginService.authenticateToken( this.authenticationResponse.bind(this));
     }
     
     authenticationResponse(success, data){

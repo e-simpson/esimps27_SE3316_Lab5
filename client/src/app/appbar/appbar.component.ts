@@ -10,7 +10,9 @@ import { SearchService } from '../search.service'
 })
 
 export class AppbarComponent implements OnInit {
-  searchResults = []
+  searchResults = [];
+  currentPage = 1;
+  pagesArray = [];
   
   constructor(private _sharedData: SharedDataService, private _searchService: SearchService) { }
 
@@ -31,27 +33,29 @@ export class AppbarComponent implements OnInit {
     else{this._sharedData.setSignInState(true);}
   }
   
-  resetSearch(){
-    this.searchResults = [];
-  }
+  resetSearch(){this.searchResults = []; this.currentPage = 1; this.pagesArray = [];}
   
-  sendSearch(searchInput){
-    this._searchService.retrieveSearch(searchInput, this.searchResponse.bind(this));
-  }
+  sendSearch(searchInput){this._searchService.retrieveSearch(searchInput, this.searchResponse.bind(this));}
   
   searchResponse(response){
+    this.resetSearch();
+    
     var list = [];
-      
-    // var count = 0;
+    
     (response.collection.items).forEach(element => {
-      // if (count>=10){ return;}; count++;
       var formattedElement = {'link': element.links[0].href, 'date': element.data[0].date_created, 'title': element.data[0].title, 'desc': element.data[0].description};
       list.push(formattedElement);
     });
     
+    for (var n = 1; n <= (Math.ceil(list.length/10); n++){
+      this.pagesArray.push(n);
+    }
+    
     this.searchResults = list;
   }
+  
+  changeSearchPage(pageNumber){this.currentPage = pageNumber;}
 
-  ngOnInit() { }
+  ngOnInit() {this.sendSearch("tad"); }
 
 }

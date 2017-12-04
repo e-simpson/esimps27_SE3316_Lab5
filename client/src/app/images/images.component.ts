@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CollectionService } from '../collection.service';
 import { SharedDataService } from '../shared-data.service';
+import { LoginService } from '../login.service';
+
 
 
 @Component({
@@ -11,7 +13,7 @@ import { SharedDataService } from '../shared-data.service';
 
 export class ImagesComponent implements OnInit {
 
-  constructor(private _collectionService: CollectionService, private _sharedData: SharedDataService) {}
+  constructor(private _collectionService: CollectionService, private _sharedData: SharedDataService, private _loginService: LoginService) {}
   
   currentPublicCollections = [];
   currentPrivateCollections = [];
@@ -40,6 +42,7 @@ export class ImagesComponent implements OnInit {
       if (element.access == "public"){
         publicCollections.push(element);
       }
+      
       if (this._sharedData.getSignInState() == true && element.access == "private" && element.owner == this._sharedData.getEmail()){
         privateCollections.push(element);
       }
@@ -50,18 +53,22 @@ export class ImagesComponent implements OnInit {
     privateCollections.sort(function(obj1, obj2){ return  obj2.rating - obj1.rating;});
 
     this.currentPublicCollections = publicCollections;
-    this.currentPrivateCollections = publicCollections;
+    this.currentPrivateCollections = privateCollections;
+
   }
   
   loadImages(){
     this._collectionService.getCollections(this.processCollections.bind(this));
   }
   
-  
-
-   
-  
-   
+  authenticationResponse(success, data){
+    if (success){
+      this._sharedData.setEmail(data.email);
+      this._sharedData.setUsername(data.name);
+      this._sharedData.setSignInState(true);
+      this.loadImages();
+    }
+  }
    
   submitRating(rating, collectionID){
     this._collectionService.sendCollectionRate(this._sharedData.getEmail(), parseInt(rating), collectionID, this.ratingResponse)
@@ -74,6 +81,8 @@ export class ImagesComponent implements OnInit {
   
   
 
-  ngOnInit() {this.loadImages();}
+  ngOnInit() {
+    this._loginService.authenticateToken( this.authenticationResponse.bind(this));
+  }
 
 }
