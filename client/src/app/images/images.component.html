@@ -10,18 +10,39 @@
         {{collection.number}}
         <div *ngIf="currentOpenCollection == collection._id">
 
-            <div *ngIf="this._sharedData.getSignInState()" class="paper container" style="width: 100%; height: 40px; margin-top: 10px; margin-bottom: 10px; padding:0px;">
-                <div class="row" style="width:100%; ">
-                    <div *ngIf="!(this._sharedData.getEmail() == collection.owner)" class="column" style="width:30%; padding-left: 40px; margin-top:-12px;">
+            <div *ngIf="this._sharedData.getSignInState()" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
+
+                <div *ngIf="!(this._sharedData.getEmail() == collection.owner)" class="row" style="width:100%; ">
+                    <div class="column" style="width:120px; padding-left: 40px; margin-top:12px; font-size:1em;">
+                        Submit a rating:
+                    </div>
+
+                    <div class="column" style="width:30%; margin-top:0px;">
                         <p class="range-field">
                             <input type="range" id="rating" min="1" max="5" #rating />
                         </p>
                     </div>
 
-                    <div *ngIf="!(this._sharedData.getEmail() == collection.owner)" class="column" style="width:20%; padding: 0px; padding-top: 2px;">
+                    <div class="column" style="width:20%; padding: 0px; padding-top: 12px;">
                         <button class="waves-effect waves-light btn-flat" style="color: #fc3d21" type="submit" name="action" (click)="submitRating(rating.value, collection._id)">Submit rating</button>
                     </div>
                 </div>
+
+                <div *ngIf="(this._sharedData.getEmail() == collection.owner)" class="row" style="width:100%; padding:40px;">
+                    <input type="text" placeholder="Enter collection name (leave blank to not change)" name="nam" #nam required>
+                    <textarea type="text" class="materialize-textarea" style="height:40px;" placeholder="Edit description (leave blank to not change)" name="desc" #desc required></textarea>
+                    <div class="switch" style="text-align: center;">
+                        <label>
+                              Private
+                              <input type="checkbox" (change)="toggleAccess()">
+                              <span class="lever"></span>
+                              Public
+                        </label>
+                        <button style="margin-left: 60px;" class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitCollectionEdit(collection._id, nam.value, desc.value)">SUBMIT EDIT</button>
+                        <button style="margin-left: 100px;" class="btn waves-effect waves-light red accent-3" type="submit" name="action" (click)="submitCollectionDelete(collection._id)">DELETE COLLECTION</button>
+                    </div>
+                </div>
+
             </div>
 
 
@@ -35,8 +56,9 @@
                     </div>
                     <div class="card-action">
                         <a target="_blank" href={{image}}>
-                            <button class = "waves-effect waves-light btn-flat" style="color: red;">Open full image in new window</button>
+                            <button class = "waves-effect waves-light btn-flat" style="color: #4286F4;">Open full image in new window</button>
                         </a>
+                        <button class = "waves-effect waves-light btn-flat" style="color: #fc3d21; float: right;" (click)="removeImageFromCollection(collection._id, image)">Remove image from collection</button>
                     </div>
                 </div>
             </div>
@@ -44,6 +66,7 @@
 
         </div>
     </div>
+
 
     <div *ngIf="this._sharedData.getSignInState()">
         <div style="font-size:3em; color: black;">My private collections </div>
@@ -57,10 +80,20 @@
             {{collection.number}}
             <div *ngIf="currentOpenCollection == collection._id">
 
-                <div *ngIf="this._sharedData.getSignInState()" class="paper container" style="width: 100%; height: 40px; margin-top: 10px; margin-bottom: 10px; padding:0px;">
-                    <div class="row" style="width:100%; ">
-                        
-                        
+                <div *ngIf="this._sharedData.getSignInState()" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
+                    <div class="row" style="width:100%; padding:40px;">
+                        <input type="text" placeholder="Enter collection name (leave blank to not change)" name="nam" #nam required>
+                        <textarea type="text" class="materialize-textarea" style="height:40px;" placeholder="Edit description (leave blank to not change)" name="desc" #desc required></textarea>
+                        <div class="switch" style="text-align: center;">
+                            <label>
+                              Private
+                              <input type="checkbox" (change)="toggleAccess()">
+                              <span class="lever"></span>
+                              Public
+                        </label>
+                            <button style="margin-left: 60px;" class="btn waves-effect waves-light blue darken-3" type="submit" name="action" (click)="submitCollectionEdit(collection._id, nam.value, desc.value)">SUBMIT EDIT</button>
+                            <button style="margin-left: 100px;" class="btn waves-effect waves-light red accent-3" type="submit" name="action" (click)="submitCollectionDelete(collection._id)">DELETE COLLECTION</button>
+                        </div>
                     </div>
                 </div>
 
@@ -74,17 +107,15 @@
                         </div>
                         <div class="card-action">
                             <a target="_blank" href={{image}}>
-                            <button class = "waves-effect waves-light btn-flat" style="color: red;">Open full image in new window</button>
-                        </a>
+                                <button class = "waves-effect waves-light btn-flat" style="color: #4286F4;">Open full image in new window</button>
+                            </a>
+                            <button class = "waves-effect waves-light btn-flat" style="color: #fc3d21; float: right;" (click)="removeImageFromCollection(collection._id, image)">Remove image from collection</button>
                         </div>
                     </div>
                 </div>
 
-
             </div>
         </div>
     </div>
-
-
 
 </div>

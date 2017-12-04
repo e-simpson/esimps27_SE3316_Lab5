@@ -7,11 +7,11 @@ export class LoginService {
 
     constructor(private http: HttpClient) { }
     
-    authenticateToken(callback){
+    authenticateToken(callback_fun){
       var foundToken = localStorage.getItem('token');
-      if (!foundToken) {callback(false); return;}
+      if (!foundToken) {return;}
       this.http.post('/api/auth', {token: foundToken}).subscribe(data => {
-        callback(true, data);
+        callback_fun(data);
       });
     }
     

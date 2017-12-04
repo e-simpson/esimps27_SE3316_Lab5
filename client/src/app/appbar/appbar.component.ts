@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { SharedDataService } from '../shared-data.service'
 import { SearchService } from '../search.service'
+import { CollectionService } from '../collection.service'
+
 
 
 @Component({
@@ -13,8 +15,21 @@ export class AppbarComponent implements OnInit {
   searchResults = [];
   currentPage = 1;
   pagesArray = [];
+  ownedCollections = [];
   
-  constructor(private _sharedData: SharedDataService, private _searchService: SearchService) { }
+  photoToAdd = "";
+  
+  setAddingToLink(link){
+    if (this.photoToAdd == link){
+      this.photoToAdd = ""
+    }
+    else{
+      this.photoToAdd = link;  
+    }
+  }
+
+  constructor(private _sharedData: SharedDataService, private _searchService: SearchService, private _collectionService: CollectionService) { }
+
 
   toggleSignIn(){
     if (this._sharedData.getSignInDisplayed() == true){this._sharedData.setSignInDisplayed(false);}
@@ -35,7 +50,27 @@ export class AppbarComponent implements OnInit {
   
   resetSearch(){this.searchResults = []; this.currentPage = 1; this.pagesArray = [];}
   
-  sendSearch(searchInput){this._searchService.retrieveSearch(searchInput, this.searchResponse.bind(this));}
+  
+  
+  
+  addImageFromCollection(collectionID, link){
+    this._collectionService.postCollectionAddImage(collectionID, link, this.addImageResponse)
+  }
+  
+  addImageResponse(res){
+    if(res.code == 200 && res.function == "addImage"){
+      Materialize.toast('Added image to ' + res.name + '!', 3000, 'rounded')
+    }
+  }
+  
+  
+  
+  
+  sendSearch(searchInput){
+    this._collectionService.postCollectionGetOwned(this._sharedData.getEmail(), this.saveOwnedCollections.bind(this));
+
+    this._searchService.retrieveSearch(searchInput, this.searchResponse.bind(this));
+  }
   
   searchResponse(response){
     this.resetSearch();
@@ -43,8 +78,7 @@ export class AppbarComponent implements OnInit {
     var list = [];
     
     (response.collection.items).forEach(element => {
-      var formattedElement = {'link': element.links[0].href, 'date': element.data[0].date_created, 'title': element.data[0].title, 'desc': element.data[0].description};
-      list.push(formattedElement);
+      list.push({'link': element.links[0].href, 'date': element.data[0].date_created, 'title': element.data[0].title, 'desc': element.data[0].description});
     });
     
     for (var n = 1; n <= Math.ceil(list.length/10); n++){
@@ -54,8 +88,22 @@ export class AppbarComponent implements OnInit {
     this.searchResults = list;
   }
   
+  saveOwnedCollections(response){
+    var list = [];
+  
+    response.forEach(element => {
+      list.push({'id': element._id, 'name': element.name});
+    });
+    
+    this.ownedCollections = list;
+  }
+  
+  
   changeSearchPage(pageNumber){this.currentPage = pageNumber;}
 
-  ngOnInit() { }
+
+  ngOnInit() { 
+    // setTimeout(function() { this.sendSearch("apollo"); }, 500);
+  }
 
 }

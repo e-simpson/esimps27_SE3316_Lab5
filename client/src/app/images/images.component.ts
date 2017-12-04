@@ -18,10 +18,12 @@ export class ImagesComponent implements OnInit {
   currentPublicCollections = [];
   currentPrivateCollections = [];
   currentOpenCollection = -1;
+  accessEdit = "private";
   
   openCollection(collectionNumber){
     if (collectionNumber == this.currentOpenCollection){this.currentOpenCollection = -1;}
     else{this.currentOpenCollection = collectionNumber;}
+    this.accessEdit = "private"
   }
   
   processCollections(images){
@@ -61,26 +63,83 @@ export class ImagesComponent implements OnInit {
     this._collectionService.getCollections(this.processCollections.bind(this));
   }
   
-  authenticationResponse(success, data){
-    if (success){
-      this._sharedData.setEmail(data.email);
-      this._sharedData.setUsername(data.name);
+  
+  
+  removeImageFromCollection(collectionID, link){
+    this._collectionService.postCollectionDeleteImage(collectionID, link, this.removeImageResponse) 
+  }
+  
+  removeImageResponse(res){
+    if(res.code == 200 && res.function == "removeImage"){
+      // Materialize.toast('Delete successful!', 3000, 'rounded')
+      location.reload();
+    }
+  }
+  
+   
+   
+   
+  submitRating(rating, collectionID){
+    this._collectionService.postCollectionRate(this._sharedData.getEmail(), parseInt(rating), collectionID, this.ratingResponse)
+  }
+  
+  ratingResponse(res){
+    if(res.code == 200 && res.function == "rate"){
+      // Materialize.toast('Delete successful!', 3000, 'rounded')
+      location.reload();
+    }
+  }
+  
+  
+  
+  
+  
+  toggleAccess(){
+    if (this.accessEdit == "private"){ this.accessEdit = "public";}
+    else{ this.accessEdit = "private";}
+  }
+  
+  submitCollectionEdit(collectionID, name, description){
+    this._collectionService.postCollectionEdit(collectionID, name, description, this.accessEdit, this.submitCollectionEditResponse);
+  }
+  
+  submitCollectionEditResponse(res){
+    if(res.code == 200 && res.function == "edit"){
+      // Materialize.toast('Delete successful!', 3000, 'rounded')
+      location.reload();
+    }
+  }
+  
+  
+  
+  
+  
+  
+  submitCollectionDelete(collectionID){
+    this._collectionService.postCollectionDelete(collectionID, this.submitCollectionDeleteResponse);
+  }
+  
+  submitCollectionDeleteResponse(res){
+    if(res.code == 200 && res.function == "delete"){
+      // Materialize.toast('Delete successful!', 3000, 'rounded')
+      location.reload();
+    }
+  }
+  
+  
+  
+  
+  
+  authenticationResponse(res){
+    if(res.code == 200 && res.function == "auth"){
+      Materialize.toast('Authenticated!', 500, 'rounded');
+      this._sharedData.setEmail(res.email);
+      this._sharedData.setUsername(res.name);
       this._sharedData.setSignInState(true);
       this.loadImages();
     }
   }
    
-  submitRating(rating, collectionID){
-    this._collectionService.sendCollectionRate(this._sharedData.getEmail(), parseInt(rating), collectionID, this.ratingResponse)
-  }
-  
-  ratingResponse(){
-    location.reload();
-  }
-  
-  
-  
-
   ngOnInit() {
     this._loginService.authenticateToken( this.authenticationResponse.bind(this));
   }

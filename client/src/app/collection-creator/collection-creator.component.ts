@@ -32,6 +32,9 @@ export class CollectionCreatorComponent implements OnInit {
   resetResponse(){ this.response = ''; }
 
   
+  
+  
+  
   submitCollectionForm(name, desc) {
     if (name == ""){
       this.response = "Please enter a name.";
@@ -42,14 +45,13 @@ export class CollectionCreatorComponent implements OnInit {
       return;
     }
     
-    this._collectionService.postCollection(this._sharedData.getEmail(), name, desc, this.access, this.onResponse.bind(this));
+    this._collectionService.postCollection(this._sharedData.getEmail(), name, desc, this.access, this.submitCollectionResponse.bind(this));
   }
   
-  onResponse(res) { 
+  submitCollectionResponse(res) { 
     this.response = res.message;
     if (res.function == "newCollection" && res.code == 200){
-      // this.Open();
-      // window.location.reload();
+      location.reload();
     }
   }
 

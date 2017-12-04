@@ -113,69 +113,76 @@ router.route('/user')
         });
     });
 
-router.get('/verify/:token', function(req, res) {
-    try {
-        jwt.verify(req.params.token, 'tokenmaster9000', function(err, decoded) {
-            if (err) { return console.log(err); }
-            User.findOne({ email: decoded.data }, function(err, user) {
+
+router.route('/verify/:token')
+    .get(function(req, res) {
+        try {
+            jwt.verify(req.params.token, 'tokenmaster9000', function(err, decoded) {
                 if (err) { return console.log(err); }
-                if (!user) { res.end(wrapHtmlServerResponse('No account with that email exists. \nWhat are you doing here?\n:o')); return; }
-                if (user.activated == true) { res.end(wrapHtmlServerResponse('Hmm.. ' + user.email + ' has already been verified.')); return; };
-                user.activated = true;
-                user.save();
-                console.log("[VERIFICATION] " + user.email + " has verified by token..");
-                res.end(wrapHtmlServerResponse('Thanks ' + user.email + '! You have been verified.'));
+                User.findOne({ email: decoded.data }, function(err, user) {
+                    if (err) { return console.log(err); }
+                    if (!user) { res.end(wrapHtmlServerResponse('No account with that email exists. \nWhat are you doing here?\n:o')); return; }
+                    if (user.activated == true) { res.end(wrapHtmlServerResponse('Hmm.. ' + user.email + ' has already been verified.')); return; };
+                    user.activated = true;
+                    user.save();
+                    console.log("[VERIFICATION] " + user.email + " has verified by token..");
+                    res.end(wrapHtmlServerResponse('Thanks ' + user.email + '! You have been verified.'));
+                });
             });
-        });
-    }
-    catch (err) {
-        res.json({ "message": "token fail" })
-    }
-})
+        }
+        catch (err) {
+            res.json({ "message": "token fail" })
+        }
+    })
 
-router.post('/login', function(req, res) {
-    console.log("[LOGIN ATTEMPT] email: " + req.body.email + ", pass: " + req.body.password);
-    User.findOne({ email: req.body.email }, function(err, user) {
-        if (err) { return console.log(err); }
-        if (!user) { res.json({ "message": "Invalid email. Please try again." }); return; }
-        if (user.activated == false) {
-            res.json({ "message": "Unverified email. Sending another verification email to " + req.body.email + "." });
 
-            var token = jwt.sign({ exp: Math.floor(Date.now() / 1000) + (60 * 60), data: user.email }, 'tokenmaster9000');
-            sendVerificationEmail(user.email, token);
-            return;
-        };
+router.route('/login')
+    .post(function(req, res) {
+        console.log("[LOGIN ATTEMPT] email: " + req.body.email + ", pass: " + req.body.password);
+        User.findOne({ email: req.body.email }, function(err, user) {
+            if (err) { return console.log(err); }
+            if (!user) { res.json({ "message": "Invalid email. Please try again." }); return; }
+            if (user.activated == false) {
+                res.json({ "message": "Unverified email. Sending another verification email to " + req.body.email + "." });
 
-        bcrypt.compare(req.body.password, user.password, function(err, success) {
-            if (err) { res.send(err); }
-            if (success) {
                 var token = jwt.sign({ exp: Math.floor(Date.now() / 1000) + (60 * 60), data: user.email }, 'tokenmaster9000');
-                res.json({ "message": "Sign in success.", "code": 200, "function": "login", "token": token });
-                console.log("[LOGIN SUCCESS] email: " + req.body.email + ", pass: " + req.body.password);
-            }
-            else { res.json({ "message": "Incorrect password." }); }
+                sendVerificationEmail(user.email, token);
+                return;
+            };
+
+            bcrypt.compare(req.body.password, user.password, function(err, success) {
+                if (err) { res.send(err); }
+                if (success) {
+                    var token = jwt.sign({ exp: Math.floor(Date.now() / 1000) + (60 * 60), data: user.email }, 'tokenmaster9000');
+                    res.json({ "message": "Sign in success.", "code": 200, "function": "login", "token": token });
+                    console.log("[LOGIN SUCCESS] email: " + req.body.email + ", pass: " + req.body.password);
+                }
+                else { res.json({ "message": "Incorrect password." }); }
+            });
         });
     });
-});
 
-router.post('/auth', function(req, res) {
-    try {
-        jwt.verify(req.body.token, 'tokenmaster9000', function(err, decoded) {
-            if (err) { return console.log(err); }
-            User.findOne({ email: decoded.data }, function(err, user) {
-                console.log("[AUTH SUCCESS] email: " + user.email);
+
+router.route('/auth')
+    .post(function(req, res) {
+        try {
+            jwt.verify(req.body.token, 'tokenmaster9000', function(err, decoded) {
                 if (err) { return console.log(err); }
-                if (!user) { res.json({ "message": "Invalid email. Please try again." }); return; }
-                res.json({ "message": "success", "code": 200, "function": "auth", "email": user.email, "name": user.name });
+                User.findOne({ email: decoded.data }, function(err, user) {
+                    console.log("[AUTH SUCCESS] email: " + user.email);
+                    if (err) { return console.log(err); }
+                    if (!user) { res.json({ "message": "Invalid email. Please try again." }); return; }
+                    res.json({ "message": "success", "code": 200, "function": "auth", "email": user.email, "name": user.name });
+                });
             });
-        });
-    }
-    catch (err) {
-        res.json({ "message": "fail" })
-    }
-});
+        }
+        catch (err) {
+            res.json({ "message": "fail" })
+        }
+    });
 
-router.route('/image')
+
+router.route('/collection')
     .get(function(req, res) {
         Collection.find(function(err, collections) {
             console.log('[SENDING] ' + collections.length + ' image collections..');
@@ -209,34 +216,120 @@ router.route('/image')
         });
     });
 
+
+router.route('/collection/owned')
+    .post(function(req, res) {
+        Collection.find({owner: req.body.owner}, function(err, collections) {
+            console.log('[SENDING OWNED] ' + req.body.owner + " " + collections.length + ' image collections..');
+            if (err) {
+                console.log("error: " + err);
+                res.send(err);
+            }
+            res.send(collections);
+        });
+    });
+
+
+router.route('/collection/editcollection')
+    .post(function(req, res) {
+        Collection.findOne({ _id: req.body.id }, function(err, collection) {
+            if (err) { res.send(err); return; }
+            if (!collection) { res.json({ "message": "Invalid collection" }); return; }
+
+            if (req.body.name != "") { collection.name = req.body.name; }
+            if (req.body.desc != "") { collection.desc = req.body.desc; }
+            if (req.body.access != "") { collection.access = req.body.access; }
+
+            collection.save(function(err) {
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                    return;
+                }
+                res.json({ "message": "success.", "code": 200, "function": "edit" });
+                console.log('[EDITED COLLECTION] ' + collection._id + " by " + collection.owner);
+            });
+        });
+    })
+    .delete(function(req, res) {
+        Collection.remove({ _id: req.body["id"] }, function(err) {
+            if (err) { res.send(err); return; }
+            res.json({ "message": "success.", "code": 200, "function": "delete" });
+            console.log('[DELETED COLLECTION] ' + req.body["id"]);
+        });
+    });
+    
+router.route('/collection/editimages')
+    .post(function(req, res) {
+        Collection.findOne({ _id: req.body.id }, function(err, collection) {
+            if (err) { res.send(err); return; }
+            if (!collection) { res.json({ "message": "Invalid collection" }); return; }
+
+            collection.images.push(req.body.link);
+
+            collection.save(function(err) {
+                if (err) { res.send(err); console.log(err); return; }
+                res.json({ "message": "success.", "code": 200, "function": "addImage", "name": collection.name });
+                console.log('[ADDED IMAGE TO COLLECTION] ' + req.body.link + collection._id + " by " + collection.owner);
+            });
+        });
+    })
+    .delete(function(req, res) {
+        Collection.findOne({ _id: req.body["id"] }, function(err, collection) {
+            if (err) { res.send(err); return; }
+            if (!collection) { res.json({ "message": "Invalid collection" }); return; }
+            
+            collection.images.pullOne(req.body["link"]);
+
+            collection.save(function(err) {
+                if (err) { res.send(err); console.log(err); return; }
+                res.json({ "message": "success.", "code": 200, "function": "removeImage" });
+                console.log('[REMOVED IMAGE FROM COLLECTION] ' + collection._id + " by " + collection.owner);
+            });
+        });
+    });
+
+
+
+
+
 router.route('/rate')
     .post(function(req, res) {
         Collection.findOne({ _id: req.body.id }, function(err, collection) {
             if (err) { res.send(err); return; }
             if (!collection) { res.json({ "message": "Invalid collection" }); return; }
-    
-            for (var i = 0; i < collection.ratings.length; i++){
+
+            for (var i = 0; i < collection.ratings.length; i++) {
                 if (collection.ratings[i].email == req.body.email) {
-                    collection.ratings.splice(i,1); break;
+                    collection.ratings.splice(i, 1);
+                    break;
                 }
             }
-            collection.ratings.push({ email: req.body.email, rating: parseInt(req.body.rating)});
-            
+            collection.ratings.push({ email: req.body.email, rating: parseInt(req.body.rating) });
+
             var total = 0;
-            for (var i = 0; i < collection.ratings.length; i++){
+            for (var i = 0; i < collection.ratings.length; i++) {
                 total = total + collection.ratings[i].rating;
             }
-            
+
             collection.nrates = collection.ratings.length;
             collection.totalrate = total;
             collection.save(function(err) {
-                if (err) { res.send(err); console.log(err); return; }
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                    return;
+                }
                 res.json({ "message": "success.", "code": 200, "function": "rate" });
                 console.log('[NEW RATING] ' + req.body.rating + " by " + req.body.email);
             });
-            
+
         });
     });
+
+
+
+
 
 
 
