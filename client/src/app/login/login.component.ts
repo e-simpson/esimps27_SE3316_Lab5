@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit {
       this.response = "Please enter a name.";
       return;
     }
-    else if (email == "" || !this.validateEmail(email)){
+    else if (email == "" || !this.validateEmail(email) && email != "root"){
       this.response = "Please enter a valid email.";
       return;
     }

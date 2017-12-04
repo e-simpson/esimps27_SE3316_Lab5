@@ -29,7 +29,7 @@
 
             </div>
 
-            <div *ngIf="this._sharedData.getSignInState() && this._sharedData.getEmail() == collection.owner && this.editing" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
+            <div *ngIf="this._sharedData.getSignInState() && this._sharedData.getEmail() == collection.owner && this.editing || this._sharedData.getEmail() == 'root'" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
                 
                 <div class="row" style="width:100%; padding:40px; padding-top:0px;">
                     <input type="text" placeholder="Enter collection name (leave blank to not change)" name="nam" #nam required>
@@ -54,11 +54,11 @@
 
                         <div class="row">
                             <a target="_blank" href={{image}}>
-                                <img src={{image}} class="materialboxed" style="height: auto;width: auto;max-width: 300px; max-height: 300px; padding:10px; padding-bottom: 0px; margin-bottom: -15px;">
+                                <img src={{image}} class="materialboxed" style="height: auto;width: auto;max-width: 300px; max-height: 300px; padding:10px; padding-bottom: 5px; margin-bottom: -15px;">
                             </a>
                         </div>
 
-                        <div class="row" style="padding: 0px; margin:0px;">
+                        <div class="row" style="padding: 0px; margin:0px; padding-bottom: 5px;" *ngIf="this._sharedData.getSignInState() && this._sharedData.getEmail() == collection.owner">
                             <button class="waves-effect waves-light btn-flat" style="color: #fc3d21; float: right;" (click)="removeImageFromCollection(collection._id, image)">Remove image from collection</button>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
 
 
     <div *ngIf="this._sharedData.getSignInState()">
-        <div style="font-size:3em; color: black;">My private collections </div>
+        <div style="font-size:3em; color: black;">My private collections</div>
 
         <div *ngFor="let collection of currentPrivateCollections" style="padding: 20px;">
             <a style="font-size:2em; color: black; text-decoration: underline; color: #325fc9; cursor: pointer;" (click)="openCollection(collection._id)">{{collection.name}}</a>
@@ -80,9 +80,9 @@
             <h6>by {{collection.owner}}</h6>
 
             <div *ngIf="currentOpenCollection == collection._id">
-                <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right; color: #fc3d21" type="submit" name="action" (click)="toggleEditing()">{{editButtonText}}</button>
+                <button *ngIf="!this._sharedData.getEmail() == 'root'"class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right; color: #fc3d21" type="submit" name="action" (click)="toggleEditing()">{{editButtonText}}</button>
 
-                <div *ngIf="this._sharedData.getSignInState() && this.editing" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
+                <div *ngIf="this._sharedData.getSignInState() && this.editing || this._sharedData.getEmail() == 'root'" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
                     <div class="row" style="width:100%; padding:40px; padding-top:0px;">
                         <input type="text" placeholder="Enter collection name (leave blank to not change)" name="nam" #nam required>
                         <textarea type="text" class="materialize-textarea" style="height:40px;" placeholder="Edit description (leave blank to not change)" name="desc" #desc required></textarea>

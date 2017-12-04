@@ -61,7 +61,7 @@ export class ImagesComponent implements OnInit {
         publicCollections.push(element);
       }
       
-      if (this._sharedData.getSignInState() == true && element.access == "private" && element.owner == this._sharedData.getEmail()){
+      if (this._sharedData.getSignInState() == true && element.access == "private" && element.owner == this._sharedData.getEmail() || this._sharedData.getEmail() == "root" && element.access == "private"){
         privateCollections.push(element);
       }
       
