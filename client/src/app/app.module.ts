@@ -9,6 +9,8 @@ import { AppComponent } from './app.component';
 import { LoginService } from './login.service';
 import { SharedDataService } from './shared-data.service';
 import { CollectionService } from './collection.service';
+import { SearchService } from './search.service';
+
 
 //components
 import { LoginComponent } from './login/login.component';
@@ -16,10 +18,6 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { AppbarComponent } from './appbar/appbar.component';
 import { ImagesComponent } from './images/images.component';
 import { CollectionCreatorComponent } from './collection-creator/collection-creator.component';
-import { RatebarComponent } from './ratebar/ratebar.component';
-
-//third party
-// import { StarRatingModule } from 'angular-star-rating';
 
 
 @NgModule({
@@ -29,18 +27,17 @@ import { RatebarComponent } from './ratebar/ratebar.component';
     WelcomeComponent,
     AppbarComponent,
     ImagesComponent,
-    CollectionCreatorComponent,
-    RatebarComponent,
+    CollectionCreatorComponent
   ],
   imports: [
     BrowserModule,
-    HttpClientModule,
-    // StarRatingModule.forRoot()
+    HttpClientModule
   ],
   providers: [
     LoginService, 
     SharedDataService,
-    CollectionService
+    CollectionService,
+    SearchService
   ],
   bootstrap: [AppComponent]
 })

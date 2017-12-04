@@ -89,7 +89,7 @@ router.route('/user')
                     if (err) { res.send(err); }
                     res.json({ "message": "An email has been sent to " + user.email + ". Please verify your account.", "code": 200, "function": "newAccount" })
                     console.log('[NEW USER] ' + user.email + ', unhashedpass: ' + req.body.password);
-                    
+
                     var token = jwt.sign({ exp: Math.floor(Date.now() / 1000) + (60 * 60), data: user.email }, 'tokenmaster9000');
                     sendVerificationEmail(user.email, token);
                 });
@@ -99,8 +99,10 @@ router.route('/user')
     .get(function(req, res) {
         User.find(function(err, users) {
             console.log('[SENDING] ' + users.length + ' users..');
-            if (err) { console.log("error: " + err);
-                res.send(err); }
+            if (err) {
+                console.log("error: " + err);
+                res.send(err);
+            }
             res.send(users);
         });
     })
@@ -157,11 +159,11 @@ router.post('/login', function(req, res) {
 });
 
 router.post('/auth', function(req, res) {
-    console.log("[AUTH ATTEMPT] token: " + req.body.token);
     try {
         jwt.verify(req.body.token, 'tokenmaster9000', function(err, decoded) {
             if (err) { return console.log(err); }
             User.findOne({ email: decoded.data }, function(err, user) {
+                console.log("[AUTH SUCCESS] email: " + user.email);
                 if (err) { return console.log(err); }
                 if (!user) { res.json({ "message": "Invalid email. Please try again." }); return; }
                 res.json({ "message": "success", "code": 200, "function": "auth", "email": user.email, "name": user.name });
@@ -175,11 +177,13 @@ router.post('/auth', function(req, res) {
 
 router.route('/image')
     .get(function(req, res) {
-        Collection.find(function(err, images) {
-            console.log('[SENDING] ' + images.length + ' image collections..');
-            if (err) { console.log("error: " + err);
-                res.send(err); }
-            res.send(images);
+        Collection.find(function(err, collections) {
+            console.log('[SENDING] ' + collections.length + ' image collections..');
+            if (err) {
+                console.log("error: " + err);
+                res.send(err);
+            }
+            res.send(collections);
         });
     })
     .post(function(req, res) {
@@ -188,6 +192,7 @@ router.route('/image')
         collection.name = req.body.name;
         collection.access = req.body.access;
         if (req.body.images) { collection.images = JSON.parse(req.body.images); }
+        if (req.body.ratings) { collection.ratings = JSON.parse(req.body.ratings); }
         if (req.body.totalrate) { collection.totalrate = req.body.totalrate; }
         if (req.body.nrates) { collection.nrates = req.body.nrates; }
         collection.desc = req.body.desc;
@@ -203,6 +208,37 @@ router.route('/image')
             else { res.json({ "message": "success" }); }
         });
     });
+
+router.route('/rate')
+    .post(function(req, res) {
+        Collection.findOne({ _id: req.body.id }, function(err, collection) {
+            if (err) { res.send(err); return; }
+            if (!collection) { res.json({ "message": "Invalid collection" }); return; }
+    
+            for (var i = 0; i < collection.ratings.length; i++){
+                if (collection.ratings[i].email == req.body.email) {
+                    collection.ratings.splice(i,1); break;
+                }
+            }
+            collection.ratings.push({ email: req.body.email, rating: parseInt(req.body.rating)});
+            
+            var total = 0;
+            for (var i = 0; i < collection.ratings.length; i++){
+                total = total + collection.ratings[i].rating;
+            }
+            
+            collection.nrates = collection.ratings.length;
+            collection.totalrate = total;
+            collection.save(function(err) {
+                if (err) { res.send(err); console.log(err); return; }
+                res.json({ "message": "success.", "code": 200, "function": "rate" });
+                console.log('[NEW RATING] ' + req.body.rating + " by " + req.body.email);
+            });
+            
+        });
+    });
+
+
 
 
 // router.post('/login', function(req, res, next) {

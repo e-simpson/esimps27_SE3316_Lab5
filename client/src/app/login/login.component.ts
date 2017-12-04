@@ -17,8 +17,7 @@ export class LoginComponent implements OnInit {
   
   constructor(private _loginService: LoginService, private _sharedData: SharedDataService) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {  }
   
   toggleSignIn(){
     if (this._sharedData.getSignInDisplayed() == true){

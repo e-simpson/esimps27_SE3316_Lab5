@@ -9,14 +9,14 @@
             
             <br><br><br>
             <div [hidden]="!creatingAccount">
-                <input type="text" placeholder="Enter Name" (click)="resetResponse()" name="nam" #nam required>
+                <input type="text" placeholder="Enter Name" (keyup.enter)="submitLoginForm(email.value, pass.value, nam.value)" (click)="resetResponse()" name="nam" #nam required>
                 <br><br><br>
             </div>
             
-            <input type="text" placeholder="Enter Email" (click)="resetResponse()" name="email" #email required>
+            <input type="text" placeholder="Enter Email" (keyup.enter)="submitLoginForm(email.value, pass.value, nam.value)" (click)="resetResponse()" name="email" #email required>
 
             <br><br><br>
-            <input type="password" placeholder="Enter Password" (click)="resetResponse()" name="pass" #pass required>
+            <input type="password" (keyup.enter)="submitLoginForm(email.value, pass.value, nam.value)" placeholder="Enter Password" (click)="resetResponse()" name="pass" #pass required>
 
             
             <div style="text-align: center; padding-top: 10px; padding-bottom: 20px;">

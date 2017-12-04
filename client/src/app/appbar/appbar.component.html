@@ -1,21 +1,19 @@
 <div class="appbar">
     <div class="barComponent" style="width:80px;">
-            <img style="padding: 12px; float: left; width:100%;" src="assets/nasaicon.png">
+        <img style="padding: 12px; float: left; width:100%;" src="assets/nasaicon.png">
     </div>
-    
+
     <div class="barComponent">
         <div class="appbartitle">NASA Gallery</div>
     </div>
 
     <div class="barComponent" *ngIf="this._sharedData.getSignInState()">
-        <nav class="grey" style="height: 40px; width: 300px; float: right;">
+        <nav class="grey" style="height: 40px; width: 300px; float: right; border-radius: 25px;">
             <div class="nav-wrapper">
-                <form>
-                    <div class="input-field" style="height: 40px;">
-                        <input id="search" autocomplete="off" type="search" required>
-                        <label class="label-icon" style="margin-top: -10px;" for="search"><i class="material-icons">search</i></label>
-                    </div>
-                </form>
+                <div class="input-field" style="height: 40px;">
+                    <input (keyup.enter)="sendSearch(search.value)" style="height: 40px; border-radius: 25px;" #search id="search" autocomplete="off" type="search" required>
+                    <label class="label-icon" style="margin-top: -10px;" for="search"><i class="material-icons">search</i></label>
+                </div>
             </div>
         </nav>
     </div>
@@ -27,4 +25,30 @@
     <div class="barComponent">
         <button class="waves-effect waves-light btn-flat" style="float: right; padding-bottom: 5px;" *ngIf="this._sharedData.getSignInState()" type="submit" name="action" (click)="toggleSignInState()">Sign out</button>
     </div>
-</div>    
+</div>
+
+
+
+<div *ngIf="searchResults.length > 0" style="padding: 40px; background-color: #e8e8e8">
+    <a style="font-size:2.3em; color: #fc3d21;">{{this.searchResults.length}} Results</a>
+    <button class="waves-effect waves-light btn-flat" style="margin-top:10px; color: #fc3d21; float: right;" type="submit" (click)="resetSearch()">Close search results</button>
+
+    <div *ngFor="let result of searchResults" style="padding-top: 40px;">
+        <div class="card">
+            <div class="card-image">
+                <a href={{result.link}} target="_blank"><img  class="materialboxed" src={{result.link}}></a>
+            </div>
+            <div class="card-content">
+                <a style="font-size:2em; color: black;">{{result.title}}</a>
+                <a style="font-size:2em; color: #c9c9c9; float:right;">{{result.date}}</a>
+                <h6>{{result.desc}}</h6>
+            </div>
+            <div class="card-action">
+                <a target="_blank" href={{result.link}}>
+                    <button class = "waves-effect waves-light btn-flat" style="color: red;">Open full image in new window</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>

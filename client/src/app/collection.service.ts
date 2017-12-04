@@ -19,7 +19,9 @@ export class CollectionService {
       });
     }
     
-    sendCollectionRate(passedOwner, passedName, passedDesc, passedAccess){
-      
+    sendCollectionRate(useremail, passedRating, passedCollectionID, callback_fun){
+       this.http.post('/api/rate', {email: useremail, rating: passedRating, id: passedCollectionID}).subscribe(data => {
+          callback_fun(data);
+      });
     }
 }
