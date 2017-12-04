@@ -167,17 +167,17 @@ router.route('/auth')
     .post(function(req, res) {
         try {
             jwt.verify(req.body.token, 'tokenmaster9000', function(err, decoded) {
-                if (err) { return console.log(err); }
+                if (err) { return res.send(err); }
                 User.findOne({ email: decoded.data }, function(err, user) {
                     console.log("[AUTH SUCCESS] email: " + user.email);
-                    if (err) { return console.log(err); }
+                    if (err) { return res.send(err); }
                     if (!user) { res.json({ "message": "Invalid email. Please try again." }); return; }
                     res.json({ "message": "success", "code": 200, "function": "auth", "email": user.email, "name": user.name });
                 });
             });
         }
         catch (err) {
-            res.json({ "message": "fail" })
+            if (err) { return res.send(err); }
         }
     });
 

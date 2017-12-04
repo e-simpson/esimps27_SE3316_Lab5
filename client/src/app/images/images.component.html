@@ -1,18 +1,19 @@
 <div style="padding: 40px; padding-bottom:0px;">
     <div style="font-size:3em; color: black;">Public collections </div>
-
+    
     <div *ngFor="let collection of currentPublicCollections" style="padding: 20px;">
         <a style="font-size:2em; color: black; text-decoration: underline; color: #325fc9; cursor: pointer;" (click)="openCollection(collection._id)">{{collection.name}}</a>
         <a style="font-size:2em; padding-left: 20px; color: grey;">{{collection.rating}} Stars</a>
         <a style="font-size:2em; color: #c9c9c9; float:right;">{{collection.length}} Images</a>
         <h6>{{collection.desc}}</h6>
         <h6>by {{collection.owner}}</h6>
-        {{collection.number}}
         <div *ngIf="currentOpenCollection == collection._id">
 
-            <div *ngIf="this._sharedData.getSignInState()" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
+            <button *ngIf="this._sharedData.getEmail() == collection.owner" class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right; color: #fc3d21" type="submit" name="action" (click)="toggleEditing()">{{editButtonText}}</button>
 
-                <div *ngIf="!(this._sharedData.getEmail() == collection.owner)" class="row" style="width:100%; ">
+            <div *ngIf="this._sharedData.getSignInState() && this._sharedData.getEmail() != collection.owner" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
+
+                <div class="row" style="width:100%; ">
                     <div class="column" style="width:120px; padding-left: 40px; margin-top:12px; font-size:1em;">
                         Submit a rating:
                     </div>
@@ -28,7 +29,11 @@
                     </div>
                 </div>
 
-                <div *ngIf="(this._sharedData.getEmail() == collection.owner)" class="row" style="width:100%; padding:40px;">
+            </div>
+
+            <div *ngIf="this._sharedData.getSignInState() && this._sharedData.getEmail() == collection.owner && this.editing" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
+                
+                <div class="row" style="width:100%; padding:40px; padding-top:0px;">
                     <input type="text" placeholder="Enter collection name (leave blank to not change)" name="nam" #nam required>
                     <textarea type="text" class="materialize-textarea" style="height:40px;" placeholder="Edit description (leave blank to not change)" name="desc" #desc required></textarea>
                     <div class="switch" style="text-align: center;">
@@ -42,27 +47,25 @@
                         <button style="margin-left: 100px;" class="btn waves-effect waves-light red accent-3" type="submit" name="action" (click)="submitCollectionDelete(collection._id)">DELETE COLLECTION</button>
                     </div>
                 </div>
-
+            
             </div>
 
+            <div class="row" style="padding:0px; margin:0px; width: 100%; float:center;">
+                <div style="height: auto; width: 100%; overflow: auto" align="center">
+                    <div *ngFor="let image of collection.images" class="paper" style="display: inline-block; height: auto; width:auto; padding: 0px; margin: 10px;">
 
-            <div *ngFor="let image of collection.images" style="margin: auto; padding-top: 20px;">
-                <div class="card" style="">
-                    <div class="card-image">
-                        <a target="_blank" href={{image}}><img class="materialboxed" src={{image}}></a>
-                    </div>
-                    <div class="card-content">
-                        Card Title
-                    </div>
-                    <div class="card-action">
-                        <a target="_blank" href={{image}}>
-                            <button class = "waves-effect waves-light btn-flat" style="color: #4286F4;">Open full image in new window</button>
-                        </a>
-                        <button class = "waves-effect waves-light btn-flat" style="color: #fc3d21; float: right;" (click)="removeImageFromCollection(collection._id, image)">Remove image from collection</button>
+                        <div class="row">
+                            <a target="_blank" href={{image}}>
+                                <img src={{image}} class="materialboxed" style="height: auto;width: auto;max-width: 300px; max-height: 300px; padding:10px; padding-bottom: 0px; margin-bottom: -15px;">
+                            </a>
+                        </div>
+
+                        <div class="row" style="padding: 0px; margin:0px;">
+                            <button class="waves-effect waves-light btn-flat" style="color: #fc3d21; float: right;" (click)="removeImageFromCollection(collection._id, image)">Remove image from collection</button>
+                        </div>
                     </div>
                 </div>
             </div>
-
 
         </div>
     </div>
@@ -77,11 +80,12 @@
             <a style="font-size:2em; color: #c9c9c9; float:right;">{{collection.length}} Images</a>
             <h6>{{collection.desc}}</h6>
             <h6>by {{collection.owner}}</h6>
-            {{collection.number}}
-            <div *ngIf="currentOpenCollection == collection._id">
 
-                <div *ngIf="this._sharedData.getSignInState()" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
-                    <div class="row" style="width:100%; padding:40px;">
+            <div *ngIf="currentOpenCollection == collection._id">
+                <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right; color: #fc3d21" type="submit" name="action" (click)="toggleEditing()">{{editButtonText}}</button>
+
+                <div *ngIf="this._sharedData.getSignInState() && this.editing" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
+                    <div class="row" style="width:100%; padding:40px; padding-top:0px;">
                         <input type="text" placeholder="Enter collection name (leave blank to not change)" name="nam" #nam required>
                         <textarea type="text" class="materialize-textarea" style="height:40px;" placeholder="Edit description (leave blank to not change)" name="desc" #desc required></textarea>
                         <div class="switch" style="text-align: center;">
@@ -97,19 +101,20 @@
                     </div>
                 </div>
 
-                <div *ngFor="let image of collection.images" style="margin: auto; padding-top: 20px;">
-                    <div class="card" style="">
-                        <div class="card-image">
-                            <a target="_blank" href={{image}}><img class="materialboxed" src={{image}}></a>
-                        </div>
-                        <div class="card-content">
-                            Card Title
-                        </div>
-                        <div class="card-action">
-                            <a target="_blank" href={{image}}>
-                                <button class = "waves-effect waves-light btn-flat" style="color: #4286F4;">Open full image in new window</button>
+
+                <div class="row" style="padding:0px; margin:0px; width: 100%; float:center;">
+                    <div style="height: auto; width: 100%; overflow: auto" align="center">
+                        <div *ngFor="let image of collection.images" class="paper" style="display: inline-block; height: auto; width:auto; padding: 0px; margin: 10px;">
+
+                            <div class="row">
+                                <a target="_blank" href={{image}}>
+                                <img src={{image}} class="materialboxed" style="height: auto;width: auto;max-width: 300px; max-height: 300px; padding:10px; padding-bottom: 0px; margin-bottom: -15px;">
                             </a>
-                            <button class = "waves-effect waves-light btn-flat" style="color: #fc3d21; float: right;" (click)="removeImageFromCollection(collection._id, image)">Remove image from collection</button>
+                            </div>
+
+                            <div class="row" style="padding: 0px; margin:0px;">
+                                <button class="waves-effect waves-light btn-flat" style="color: #fc3d21; float: right;" (click)="removeImageFromCollection(collection._id, image)">Remove image from collection</button>
+                            </div>
                         </div>
                     </div>
                 </div>

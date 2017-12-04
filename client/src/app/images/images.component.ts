@@ -19,8 +19,24 @@ export class ImagesComponent implements OnInit {
   currentPrivateCollections = [];
   currentOpenCollection = -1;
   accessEdit = "private";
+  editing = true;
+  editButtonText = "Edit";
+  
+  
+  toggleEditing(){
+    if (this.editing == true){
+      this.editing = false;
+      this.editButtonText = "Edit";
+    }
+    else{
+      this.editing = true;
+      this.editButtonText = "Cancel Editing";
+    }
+  }
+  
   
   openCollection(collectionNumber){
+    this.editing = false; this.editButtonText = "Edit";
     if (collectionNumber == this.currentOpenCollection){this.currentOpenCollection = -1;}
     else{this.currentOpenCollection = collectionNumber;}
     this.accessEdit = "private"
@@ -131,13 +147,16 @@ export class ImagesComponent implements OnInit {
   
   
   authenticationResponse(res){
-    if(res.code == 200 && res.function == "auth"){
+    if(res && res.code == 200 && res.function == "auth"){
       Materialize.toast('Authenticated!', 500, 'rounded');
       this._sharedData.setEmail(res.email);
       this._sharedData.setUsername(res.name);
       this._sharedData.setSignInState(true);
-      this.loadImages();
     }
+    else {
+      Materialize.toast('Welcome Guest! Consider making an account!', 4000, 'rounded');
+    }
+    this.loadImages();
   }
    
   ngOnInit() {

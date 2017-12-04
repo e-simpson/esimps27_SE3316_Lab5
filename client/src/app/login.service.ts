@@ -9,7 +9,7 @@ export class LoginService {
     
     authenticateToken(callback_fun){
       var foundToken = localStorage.getItem('token');
-      if (!foundToken) {return;}
+      if (!foundToken) {callback_fun(); return;}
       this.http.post('/api/auth', {token: foundToken}).subscribe(data => {
         callback_fun(data);
       });
