@@ -18,6 +18,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { AppbarComponent } from './appbar/appbar.component';
 import { ImagesComponent } from './images/images.component';
 import { CollectionCreatorComponent } from './collection-creator/collection-creator.component';
+import { PolicyComponent } from './policy/policy.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { CollectionCreatorComponent } from './collection-creator/collection-crea
     WelcomeComponent,
     AppbarComponent,
     ImagesComponent,
-    CollectionCreatorComponent
+    CollectionCreatorComponent,
+    PolicyComponent
   ],
   imports: [
     BrowserModule,

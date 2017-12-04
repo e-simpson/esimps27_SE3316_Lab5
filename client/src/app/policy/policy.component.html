@@ -1,0 +1,59 @@
+<div class="row">
+    <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right;" type="submit" name="action" (click)="togglePolicy()">{{policyButtonText}}</button>
+</div>
+
+
+<div class="row paper" *ngIf = "showingPolicy" style="padding: 40px; width: 80%; ">
+        <a style="font-size:2em ; color: black;">Privacy Policy</a>
+        <br><br>
+        <a style="font-size:0.9em; color: black;">{{currentPrivacyPolicy}}</a>
+        <br><br><br>
+        <a style="font-size:2em; color: black;">Security Policy</a>
+        <br><br>
+        <a style="font-size:0.9em; color: black;">{{currentSecurityPolicy}}</a>
+</div>
+
+<div *ngIf="this._sharedData.getEmail() == 'root' && showingPolicy" class = "row paper" style="padding: 40px; width: 80%;" >
+    <a style="font-size:3em; color: grey;">Edit policies</a>
+        <br><br>
+        <textarea type="text"  class="materialize-textarea" style="height:10px;" placeholder="Enter new privacy policy"  name="desc" #priv required></textarea>
+
+        <br><br>
+        <textarea type="text"  class="materialize-textarea" style="height:10px;" placeholder="Enter new security policy" name="desc" #secu required></textarea>
+
+
+        <div style="text-align: center; padding-bottom: 20px;">
+            <button class="btn waves-effect waves-light red accent-3" type="submit" name="action" (click)="postChangedPolicy(priv.value, secu.value)">Submit new policies</button>
+        </div>
+</div>
+
+
+<div class="row">
+    <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right;" type="submit" name="action" (click)="toggleDMCA()">{{dmcaButtonText}}</button>
+</div>
+
+
+<div class="row paper" *ngIf = "showingDMCA" style="padding: 40px; width: 80%; ">
+        <a style="font-size:2em ; color: black;">DMCA Policy</a>
+        <br><br>
+        <a style="font-size:0.9em; color: black;">{{currentDMCA}}</a>
+        <br><br><br>
+        <a style="font-size:2em; color: black;">Takedown Policy</a>
+        <br><br>
+        <a style="font-size:0.9em; color: black;">{{currentTakedown}}</a>
+</div>
+
+<div *ngIf="this._sharedData.getEmail() == 'root' && showingDMCA" class = "row paper" style="padding: 40px; width: 80%;" >
+    <a style="font-size:3em; color: grey;">Edit DMCA & takedown policy</a>
+        <br><br>
+        <textarea type="text"  class="materialize-textarea" style="height:10px;" placeholder="Enter new dmca"  name="desc" #dmca required></textarea>
+
+        <br><br>
+        <textarea type="text"  class="materialize-textarea" style="height:10px;" placeholder="Enter new takedown" name="desc" #take required></textarea>
+
+
+        <div style="text-align: center; padding-bottom: 20px;">
+            <button class="btn waves-effect waves-light red accent-3" type="submit" name="action" (click)="postChangedDMCA(dmca.value, take.value)">Submit new policies</button>
+        </div>
+</div>
+

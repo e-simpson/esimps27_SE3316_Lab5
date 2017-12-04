@@ -25,6 +25,8 @@ app.use(cors());
 //======= MODEL IMPORTS ===============
 var User = require("./models/user")
 var Collection = require("./models/collection")
+var Policy = require("./models/policy")
+var DMCA = require("./models/dmca")
 //=====================================
 
 
@@ -105,13 +107,13 @@ router.route('/user')
             }
             res.send(users);
         });
-    })
-    .delete(function(req, res) {
-        User.remove({}, function(err) {
-            if (err) { console.log(err); }
-            else { res.json({ "message": "success" }); }
-        });
     });
+    // .delete(function(req, res) {
+    //     User.remove({}, function(err) {
+    //         if (err) { console.log(err); }
+    //         else { res.json({ "message": "success" }); }
+    //     });
+    // });
 
 
 router.route('/verify/:token')
@@ -219,7 +221,7 @@ router.route('/collection')
 
 router.route('/collection/owned')
     .post(function(req, res) {
-        Collection.find({owner: req.body.owner}, function(err, collections) {
+        Collection.find({ owner: req.body.owner }, function(err, collections) {
             console.log('[SENDING OWNED] ' + req.body.owner + " " + collections.length + ' image collections..');
             if (err) {
                 console.log("error: " + err);
@@ -258,7 +260,7 @@ router.route('/collection/editcollection')
             console.log('[DELETED COLLECTION] ' + req.body["id"]);
         });
     });
-    
+
 router.route('/collection/editimages')
     .post(function(req, res) {
         Collection.findOne({ _id: req.body.id }, function(err, collection) {
@@ -268,7 +270,8 @@ router.route('/collection/editimages')
             collection.images.push(req.body.link);
 
             collection.save(function(err) {
-                if (err) { res.send(err); console.log(err); return; }
+                if (err) { res.send(err);
+                    console.log(err); return; }
                 res.json({ "message": "success.", "code": 200, "function": "addImage", "name": collection.name });
                 console.log('[ADDED IMAGE TO COLLECTION] ' + req.body.link + collection._id + " by " + collection.owner);
             });
@@ -278,11 +281,12 @@ router.route('/collection/editimages')
         Collection.findOne({ _id: req.body["id"] }, function(err, collection) {
             if (err) { res.send(err); return; }
             if (!collection) { res.json({ "message": "Invalid collection" }); return; }
-            
+
             collection.images.pullOne(req.body["link"]);
 
             collection.save(function(err) {
-                if (err) { res.send(err); console.log(err); return; }
+                if (err) { res.send(err);
+                    console.log(err); return; }
                 res.json({ "message": "success.", "code": 200, "function": "removeImage" });
                 console.log('[REMOVED IMAGE FROM COLLECTION] ' + collection._id + " by " + collection.owner);
             });
@@ -326,6 +330,67 @@ router.route('/rate')
 
         });
     });
+
+
+router.route('/policy')
+    .post(function(req, res) {
+        Policy.remove({}, function(err) {
+            if (err) { console.log(err);}
+        });
+        
+        var policy = new Policy();
+
+        policy.security = req.body.security;
+        policy.privacy = req.body.privacy;
+        policy.save(function(err) {
+            if (err) { res.send(err);
+                console.log(err); return; }
+            res.json({ "message": "success", "code": 200, "function": "policyChange" });
+            console.log('[WRITING POLICY]');
+        });
+    })
+    .get(function(req, res) {
+        Policy.find(function(err, policy) {
+            console.log('[SENDING POLICY]');
+            if (err) {
+                console.log("error: " + err);
+                res.send(err);
+            }
+            
+
+            res.send(policy);
+        });
+    });
+    
+router.route('/dmca')
+    .post(function(req, res) {
+        DMCA.remove({}, function(err) {
+            if (err) { console.log(err);}
+        });
+        
+        var dmca = new DMCA();
+
+        dmca.dmca = req.body.dmca;
+        dmca.takedown = req.body.takedown;
+        dmca.save(function(err) {
+            if (err) { res.send(err);
+                console.log(err); return; }
+            res.json({ "message": "success", "code": 200, "function": "dmcaChange" });
+            console.log('[WRITING DMCA]');
+        });
+    })
+    .get(function(req, res) {
+        DMCA.find(function(err, dmca) {
+            console.log('[SENDING DMCA]');
+            if (err) {
+                console.log("error: " + err);
+                res.send(err);
+            }
+            
+
+            res.send(dmca);
+        });
+    });    
 
 
 

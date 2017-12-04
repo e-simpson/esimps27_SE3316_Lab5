@@ -26,4 +26,29 @@ export class LoginService {
           callback_fun(data, passedEmail);
       });
     }
+    
+    
+    
+    
+    postNewPolicy(newSecurity, newPrivacy, callback_fun) {
+      this.http.post('/api/policy', {security: newSecurity, privacy: newPrivacy}).subscribe(data => {
+          callback_fun(data);
+      });
+    }
+    getPolicies(callback_fun) {
+      this.http.get('/api/policy').subscribe(data => {
+          callback_fun(data);
+      });
+    }
+    
+    postNewDMCA(newDmca, newTakedown, callback_fun) {
+      this.http.post('/api/dmca', {dmca: newDmca, takedown: newTakedown}).subscribe(data => {
+          callback_fun(data);
+      });
+    }
+    getDMCA(callback_fun) {
+      this.http.get('/api/dmca').subscribe(data => {
+          callback_fun(data);
+      });
+    }
 }
