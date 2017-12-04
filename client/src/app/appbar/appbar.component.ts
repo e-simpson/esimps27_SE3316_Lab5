@@ -47,7 +47,7 @@ export class AppbarComponent implements OnInit {
       list.push(formattedElement);
     });
     
-    for (var n = 1; n <= (Math.ceil(list.length/10); n++){
+    for (var n = 1; n <= Math.ceil(list.length/10); n++){
       this.pagesArray.push(n);
     }
     
@@ -56,6 +56,6 @@ export class AppbarComponent implements OnInit {
   
   changeSearchPage(pageNumber){this.currentPage = pageNumber;}
 
-  ngOnInit() {this.sendSearch("tad"); }
+  ngOnInit() { }
 
 }
