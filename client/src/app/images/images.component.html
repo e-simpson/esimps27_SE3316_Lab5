@@ -80,7 +80,7 @@
             <h6>by {{collection.owner}}</h6>
 
             <div *ngIf="currentOpenCollection == collection._id">
-                <button *ngIf="!this._sharedData.getEmail() == 'root'"class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right; color: #fc3d21" type="submit" name="action" (click)="toggleEditing()">{{editButtonText}}</button>
+                <button *ngIf="this._sharedData.getEmail() != 'root'"  class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right; color: #fc3d21" type="submit" name="action" (click)="toggleEditing()">{{editButtonText}}</button>
 
                 <div *ngIf="this._sharedData.getSignInState() && this.editing || this._sharedData.getEmail() == 'root'" class="paper container" style="width: 100%; margin-top: 10px; margin-bottom: 10px; padding:0px;">
                     <div class="row" style="width:100%; padding:40px; padding-top:0px;">
