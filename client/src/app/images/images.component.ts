@@ -15,14 +15,14 @@ export class ImagesComponent implements OnInit {
 
   constructor(private _collectionService: CollectionService, private _sharedData: SharedDataService, private _loginService: LoginService) {}
   
-  currentPublicCollections = [];
-  currentPrivateCollections = [];
-  currentOpenCollection = -1;
-  accessEdit = "private";
-  editing = true;
-  editButtonText = "Edit";
+  currentPublicCollections = [];    //holds the current public collections
+  currentPrivateCollections = [];   //holds the current private collections, if logged in
+  currentOpenCollection = -1;       //holds the current opened collection in the UI
+  accessEdit = "private";           //for editing the collections access
+  editing = true;                   //toggles editing mode
+  editButtonText = "Edit";          //button text changing
   
-  
+  //UI button toggling
   toggleEditing(){
     if (this.editing == true){
       this.editing = false;

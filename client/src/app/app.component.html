@@ -1,11 +1,17 @@
-<app-appbar></app-appbar>
+<!--search bar and sign in and sign out buttons-->
+<app-appbar></app-appbar>   
 
+<!--login/create account component-->
 <app-login *ngIf="this._sharedData.getSignInDisplayed() && !this._sharedData.getSignInState()"></app-login>
 
+<!--page welcomer, shows user email and name if logged it, and if logged out shows about section-->
 <app-welcome></app-welcome>
 
+<!--collection creator interface-->
 <app-collection-creator *ngIf="this._sharedData.getSignInState()"></app-collection-creator>
 
+<!--authenticates the user and displays the corresponding images associated-->
 <app-images></app-images>
 
+<!--shows the site's policies, report filer, and admin tools-->
 <app-policy></app-policy>

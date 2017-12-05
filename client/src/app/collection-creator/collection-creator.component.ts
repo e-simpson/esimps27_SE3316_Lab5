@@ -8,21 +8,25 @@ import { SharedDataService } from '../shared-data.service';
   styleUrls: ['./collection-creator.component.css']
 })
 
+
+
+//responsible for collection creation
 export class CollectionCreatorComponent implements OnInit {
-  open = false;
-  access = "private"
+  open = false; 
+  access = "private"; //default access
   response = '';
   
   constructor(private _collectionService: CollectionService, private _sharedData: SharedDataService) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
   
+  //used for UI opening and closing
   toggleOpen(){
     if (this.open == true){ this.open = false;}
     else{ this.open = true;}
   }
   
+  //used for UI opening and closing
   toggleAccess(){
     this.resetResponse();
     if (this.access == "private"){ this.access = "public";}
@@ -34,7 +38,7 @@ export class CollectionCreatorComponent implements OnInit {
   
   
   
-  
+  //checks if the collection form is filled out, if so post it to the server with the collection service
   submitCollectionForm(name, desc) {
     if (name == ""){
       this.response = "Please enter a name.";
@@ -48,6 +52,7 @@ export class CollectionCreatorComponent implements OnInit {
     this._collectionService.postCollection(this._sharedData.getEmail(), name, desc, this.access, this.submitCollectionResponse.bind(this));
   }
   
+  //signifies successful collection creation to the user with a reload
   submitCollectionResponse(res) { 
     this.response = res.message;
     if (res.function == "newCollection" && res.code == 200){

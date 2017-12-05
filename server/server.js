@@ -32,6 +32,9 @@ var Report = require("./models/report")
 
 
 //======= FUNCTIONS ===================
+
+//function to take an email address, generate a token for it, append it to the api url, and send it to the email address so it can be verified
+//using third party api: nodemailer
 var sendVerificationEmail = function(email, token) {
     console.log("[EMAILING] " + email + " for verification..")
     var link = "https://esimps27-lab-5-esimps27.c9users.io:8081/api/verify/" + token;
@@ -41,7 +44,7 @@ var sendVerificationEmail = function(email, token) {
         var transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 587,
-            secure: false, // true for 465, false for other ports
+            secure: false,
             auth: {
                 user: 'networkmaster8080@gmail.com',
                 pass: 'ilovenetworking'
@@ -65,6 +68,7 @@ var sendVerificationEmail = function(email, token) {
     });
 };
 
+//wraps some message in nice html and styling so it may display nicely (for email verification emails)
 var wrapHtmlServerResponse = function(message) {
     return ('<h1 style="font-family: sans-serif; font-size:2em; text-align: center; padding-top: 100px; margin: auto;">' + message + '</h1>');
 }
@@ -74,7 +78,13 @@ var wrapHtmlServerResponse = function(message) {
 
 
 //======= USER ROUTES =================
-var router = express.Router();
+
+var router = express.Router();          //router set up with express
+
+
+//user route, used to post a new user registration
+//get was used in testing
+//delete was used in testing
 router.route('/user')
     .post(function(req, res) {
         User.find({ email: req.body.email }, function(err, users) {
@@ -98,17 +108,17 @@ router.route('/user')
                 });
             });
         });
-    })
-    .get(function(req, res) {
-        User.find(function(err, users) {
-            console.log('[SENDING] ' + users.length + ' users..');
-            if (err) {
-                console.log("error: " + err);
-                res.send(err);
-            }
-            res.send(users);
-        });
     });
+    // .get(function(req, res) {
+    //     User.find(function(err, users) {
+    //         console.log('[SENDING] ' + users.length + ' users..');
+    //         if (err) {
+    //             console.log("error: " + err);
+    //             res.send(err);
+    //         }
+    //         res.send(users);
+    //     });
+    // })
 // .delete(function(req, res) {
 //     User.remove({}, function(err) {
 //         if (err) { console.log(err); }
@@ -117,6 +127,9 @@ router.route('/user')
 // });
 
 
+//verify route, with token appened, get request will verify the token using jwt, then send the success or fail response
+//used for email verification
+//using third-party api: JWT
 router.route('/verify/:token')
     .get(function(req, res) {
         try {
@@ -136,9 +149,12 @@ router.route('/verify/:token')
         catch (err) {
             res.json({ "message": "token fail" })
         }
-    })
+    })  
 
 
+///login route, takes in a user name and email (login process)
+//sends back a success, and a token to be stored at the client for later authentication
+//using third-party api: JWT
 router.route('/login')
     .post(function(req, res) {
         console.log("[LOGIN ATTEMPT] email: " + req.body.email + ", pass: " + req.body.password);
@@ -166,6 +182,9 @@ router.route('/login')
     });
 
 
+//auth route, takes a jwt token
+//attempts to authenticate it and then sends back the associated user email if it is authenticated
+//using third-party api: JWT
 router.route('/auth')
     .post(function(req, res) {
         try {
@@ -185,6 +204,9 @@ router.route('/auth')
     });
 
 
+//collection route
+//get returns all collections in the mongoDB
+//post takes new collection details, creates a new collection and saves it to the mongoDB
 router.route('/collection')
     .get(function(req, res) {
         Collection.find(function(err, collections) {
@@ -211,15 +233,18 @@ router.route('/collection')
             res.json({ "message": "success", "function": "newCollection", "code": 200 })
             console.log('[NEW COLLECTION] ' + collection.name + " by " + collection.owner);
         });
-    })
-    .delete(function(req, res) {
-        Collection.remove({}, function(err) {
-            if (err) { console.log(err); }
-            else { res.json({ "message": "success" }); }
-        });
     });
+    // .delete(function(req, res) {
+    //     Collection.remove({}, function(err) {
+    //         if (err) { console.log(err); }
+    //         else { res.json({ "message": "success" }); }
+    //     });
+    // });
 
 
+//collection/owned route
+//post takes a user email and returns all the collections that they have created
+//used to display only a user's collections
 router.route('/collection/owned')
     .post(function(req, res) {
         Collection.find({ owner: req.body.owner }, function(err, collections) {
@@ -233,6 +258,9 @@ router.route('/collection/owned')
     });
 
 
+//collection/editcollection route
+//post takes a collectionID and will update the collection's details if it is passed any new ones to overwrite them with
+//delete takes a collection ID and will delete the associated collection in the mongoDB
 router.route('/collection/editcollection')
     .post(function(req, res) {
         Collection.findOne({ _id: req.body.id }, function(err, collection) {
@@ -262,6 +290,10 @@ router.route('/collection/editcollection')
         });
     });
 
+
+//collection/editimages route
+//post takes in an image link and a collection ID, it will add the link to the collection's images array if it finds a collection with the same ID
+//delete takes a collection id and a link, it will delete the link from the found collection's images array
 router.route('/collection/editimages')
     .post(function(req, res) {
         Collection.findOne({ _id: req.body.id }, function(err, collection) {
@@ -301,9 +333,9 @@ router.route('/collection/editimages')
     });
 
 
-
-
-
+//rate route
+//takes in a collection id, a rating, and the rater's email, it will save this rating in the collection's ratings
+//it will also re-calculate the collection's ratings and save them to the collection
 router.route('/rate')
     .post(function(req, res) {
         Collection.findOne({ _id: req.body.id }, function(err, collection) {
@@ -339,8 +371,9 @@ router.route('/rate')
     });
 
 
-
-
+//policy route
+//post takes in a new security and privacy message and saves them to the policy DB
+//get returns the security and privacy messages to the client
 router.route('/policy')
     .post(function(req, res) {
         Policy.remove({}, function(err) {
@@ -374,6 +407,10 @@ router.route('/policy')
         });
     });
 
+
+//dmca route
+//post takes in a new dmca and takedown messages and saves them to the dmca DB
+//get returns the dmca and takedown messages to the client
 router.route('/dmca')
     .post(function(req, res) {
         DMCA.remove({}, function(err) {
@@ -409,7 +446,9 @@ router.route('/dmca')
 
 
 
-
+//report route
+//post takes report parameters and a collection ID, and saves the report to the report DB, it will also look for and fla/unflag a corresponding collection
+//delete will delete all the reports in the reportDB (only can be done by admin)
 router.route('/report')
     .post(function(req, res) {
         if (req.body.id) {
@@ -438,7 +477,6 @@ router.route('/report')
         report.desc = req.body.desc;
         var d = new Date();
         report.date = d.toString();
-        console.log(report.time);
         report.save(function(err) {
             if (err) {
                 res.send(err);
@@ -472,13 +510,14 @@ router.route('/report')
 
 
 
-
+//applys router middleware for testing purposes
 router.use(function(req, res, next) {
     console.log('Something is happening');
     next();
 });
 
 
+//connects the app to the router, using path 'api'
 app.use('/api', router);
 
 
@@ -487,7 +526,7 @@ app.use('/api', router);
 
 
 
-
+//assigns the port and starts the server
 var port = 8081;
 app.listen(port);
 console.log('[INITIALIZED] running on port ' + port + '..')

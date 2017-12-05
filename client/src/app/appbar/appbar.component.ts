@@ -11,14 +11,17 @@ import { CollectionService } from '../collection.service'
   styleUrls: ['./appbar.component.css']
 })
 
+//responsible for the top navigation bar, includes showing SEARCH and its results
 export class AppbarComponent implements OnInit {
-  searchResults = [];
-  currentPage = 1;
-  pagesArray = [];
-  ownedCollections = [];
+  searchResults = [];     //holds search results json
+  currentPage = 1;        //holds the current page of search results
+  pagesArray = [];        //holds all the page numbers in the search
+  ownedCollections = [];  //holds the collections the user owns (for adding photos to collection)
+  photoToAdd = "";        //signifies the photo to add
   
-  photoToAdd = "";
-  
+  constructor(private _sharedData: SharedDataService, private _searchService: SearchService, private _collectionService: CollectionService) { }
+
+  //UI toggling
   setAddingToLink(link){
     if (this.photoToAdd == link){
       this.photoToAdd = ""
@@ -28,14 +31,14 @@ export class AppbarComponent implements OnInit {
     }
   }
 
-  constructor(private _sharedData: SharedDataService, private _searchService: SearchService, private _collectionService: CollectionService) { }
 
-
+  //ui toggling
   toggleSignIn(){
     if (this._sharedData.getSignInDisplayed() == true){this._sharedData.setSignInDisplayed(false);}
     else{this._sharedData.setSignInDisplayed(true);}
   }
   
+  //responsible for signing out the user
   toggleSignInState(){
     if (this._sharedData.getSignInState() == true){
       this._sharedData.setSignInState(false);
@@ -48,15 +51,16 @@ export class AppbarComponent implements OnInit {
     else{this._sharedData.setSignInState(true);}
   }
   
+  //resets the search bar to default OFF state
   resetSearch(){this.searchResults = []; this.currentPage = 1; this.pagesArray = [];}
   
   
-  
-  
+  //adds an image to a collection using the collection service
   addImageFromCollection(collectionID, link){
     this._collectionService.postCollectionAddImage(collectionID, link, this.addImageResponse)
   }
   
+  //displays add image success to user
   addImageResponse(res){
     if(res.code == 200 && res.function == "addImage"){
       Materialize.toast('Added image to ' + res.name + '!', 3000, 'rounded')
@@ -65,13 +69,14 @@ export class AppbarComponent implements OnInit {
   
   
   
-  
+  //sends a search query to NASA's image base using the collection service, also retrieves the collections owned by the current user (for adding images)
   sendSearch(searchInput){
     this._collectionService.postCollectionGetOwned(this._sharedData.getEmail(), this.saveOwnedCollections.bind(this));
 
     this._searchService.retrieveSearch(searchInput, this.searchResponse.bind(this));
   }
   
+  //on successful search, this will display all of the search results, it formats the results to neat json objects
   searchResponse(response){
     this.resetSearch();
     
@@ -90,6 +95,7 @@ export class AppbarComponent implements OnInit {
 
   }
   
+  //saves the retrieved owned collections locally for later use
   saveOwnedCollections(response){
     var list = [];
   
@@ -101,6 +107,7 @@ export class AppbarComponent implements OnInit {
   }
   
   
+  //changes the current page in the search results
   changeSearchPage(pageNumber){this.currentPage = pageNumber;}
 
 

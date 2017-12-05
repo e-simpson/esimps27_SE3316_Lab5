@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 
+
+//object used to store shared data accross the app
+//useful in updating sign in state
+
 @Injectable()
 export class SharedDataService {
     signedIn = false;
@@ -8,6 +12,7 @@ export class SharedDataService {
     email = "";
     
     constructor() { }
+
 
     getUsername(){return this.username;}
     setUsername(name){return this.username = name;}

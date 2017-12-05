@@ -9,16 +9,19 @@ import { SharedDataService } from '../shared-data.service'
   styleUrls: ['./login.component.css']
 })
 
+
+//responsible for the login and creating account component
 export class LoginComponent implements OnInit {
-  response = '';
-  loginTitle = "Sign in";
-  createAccountButtonText = "Create account";
-  creatingAccount = false;
+  response = '';              //displays the login response to the user
+  loginTitle = "Sign in";     //login title changing
+  createAccountButtonText = "Create account";   //button text changing
+  creatingAccount = false;    //toggles create account/login
   
   constructor(private _loginService: LoginService, private _sharedData: SharedDataService) { }
 
   ngOnInit() {  }
   
+  //used for UI opening and closing
   toggleSignIn(){
     if (this._sharedData.getSignInDisplayed() == true){
       this._sharedData.setSignInDisplayed(false)
@@ -28,6 +31,7 @@ export class LoginComponent implements OnInit {
     }
   }
   
+  //used for UI opening and closing
   toggleCreateAccount(){
     if (this.creatingAccount == true){
       this.loginTitle = "Sign in"
@@ -41,11 +45,18 @@ export class LoginComponent implements OnInit {
     }
   }
   
+  resetResponse(){ this.response = ''; }
+
+
+  //validates an email with a common regex check
   validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
   }
 
+  //checks if the login form is filled out and then 
+  //if in create account mode, submits the new account details using the login service
+  //if in login account mode, submits the account details to be verified for login
   submitLoginForm(email, pass, name) {
     if (name == "" && this.creatingAccount){
       this.response = "Please enter a name.";
@@ -68,8 +79,9 @@ export class LoginComponent implements OnInit {
     }
   }
   
-  resetResponse(){ this.response = ''; }
-  
+  //call back from login/create account submit
+  //if successful, sets the user data in the shared data service
+  //notifies the user of success
   onResponse(res, email) { 
     this.response = res.message;
     if (res.function == "login" && res.code == 200){
