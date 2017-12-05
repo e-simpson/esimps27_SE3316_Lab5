@@ -8,6 +8,7 @@ var collectionSchema = new Schema({
     nrates: {type: Number, default: 0},
     access: {type: String, default: "public"},
     desc: {type: String, default: ""},
+    flagged: {type: Boolean, default: false},
     images: [],
     ratings: []
 });

@@ -1,5 +1,39 @@
 <div class="row">
-    <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right;" type="submit" name="action" (click)="togglePolicy()">{{policyButtonText}}</button>
+    <button class="btn-flat waves-effect waves-light" style="margin-top:5px; text-align:right;" type="submit" name="action" (click)="toggleDMCA()">{{dmcaButtonText}}</button>
+</div>
+
+
+<div class="row paper" *ngIf = "showingDMCA" style="padding: 40px; width: 80%; ">
+        <a style="font-size:2em ; color: black;">DMCA Policy</a>
+        <br><br>
+        <a style="font-size:0.9em; color: black;">{{currentDMCA}}</a>
+        <br><br><br>
+        <a style="font-size:2em; color: black;">Takedown Policy</a>
+        <br><br>
+        <a style="font-size:0.9em; color: black;">{{currentTakedown}}</a>
+</div>
+
+<div *ngIf="this._sharedData.getEmail() == 'root' && showingDMCA" class = "row paper" style="padding: 40px; width: 80%;" >
+    <a style="font-size:3em; color: grey;">Edit DMCA & takedown policy</a>
+        <br><br>
+        <textarea type="text"  class="materialize-textarea" style="height:10px;" placeholder="Enter new dmca"  name="desc" #dmca required></textarea>
+
+        <br><br>
+        <textarea type="text"  class="materialize-textarea" style="height:10px;" placeholder="Enter new takedown" name="desc" #take required></textarea>
+
+
+        <div style="text-align: center; padding-bottom: 20px;">
+            <button class="btn waves-effect waves-light red accent-3" type="submit" name="action" (click)="postChangedDMCA(dmca.value, take.value)">Submit new policies</button>
+        </div>
+</div>
+
+
+
+
+
+
+<div class="row">
+    <button class="btn-flat waves-effect waves-light" style="margin-top:5px; text-align:right;" type="submit" name="action" (click)="togglePolicy()">{{policyButtonText}}</button>
 </div>
 
 
@@ -28,32 +62,90 @@
 </div>
 
 
+
+
+
+
+
+
+<div class="row" *ngIf="this._sharedData.getEmail() == 'root'">
+    <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right;" type="submit" name="action" (click)="toggleInstructions()">{{showInstructionsButtonText}}</button>
+</div>
+
+<div *ngIf="this._sharedData.getEmail() == 'root' && showingInstructions" class="row paper" style="padding: 40px; width: 80%; ">
+        <a style="font-size:2em ; color: black;">Admin procedure</a>
+        <br><br>
+        <a style="font-size:0.9em; color: black;">
+            If you recieve a claim follow the corresponding steps: 
+            <br><br>
+            1. Using the admin account, find the image collection that is violating the DMCA policy. Usually the reporter should add this information in their report submission.
+            <br><br>
+            2. Once you have located the collection. Screen shot it and it's contents. 
+            <br><br>
+            3. Record the collection creator, and the links of all images in the collection. Mainly the offending image.
+            <br><br>
+            4. Delete the offending collection.
+            <br><br>
+            5. Email the user that created the collection about what has happened.
+            <br><br>
+            6. Email evan.simp@gmail.com (site tech support) and NASA regarding this claim.
+            <br><br>
+        </a>
+        <br><br>
+</div>
+
+
+
+<div class="row" *ngIf="this._sharedData.getEmail() == 'root'">
+    <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right;" type="submit" name="action" (click)="toggleViewReports()">{{showReportsButtonText}}</button>
+</div>
+
+<div *ngIf="this._sharedData.getEmail() == 'root' && showingReports" style="padding: 40px; width: 80%; ">
+       <div *ngFor="let report of currentReports" class="row paper">
+          Type: {{report.type}}
+          <br><br>
+          Offender: {{report.offender}}
+          <br><br>
+          Reporter: {{report.reporter}}
+          <br><br>
+          Description: {{report.desc}}
+          <br><br>
+          Datestamp: {{report.date}}
+       </div>
+      <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:center; text-align:center;" type="submit" name="action" (click)="deleteAllReports()">DELETE ALL REPORTS</button>
+
+</div>
+
+
+
+
 <div class="row">
-    <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right;" type="submit" name="action" (click)="toggleDMCA()">{{dmcaButtonText}}</button>
+    <button class="btn-flat waves-effect waves-light" style="margin-top:5px; float:right; text-align:right;" type="submit" name="action" (click)="toggleReportCreate()">{{showReportButtonText}}</button>
 </div>
 
-
-<div class="row paper" *ngIf = "showingDMCA" style="padding: 40px; width: 80%; ">
-        <a style="font-size:2em ; color: black;">DMCA Policy</a>
+<div *ngIf="showingReportCreate" class="row paper" style="padding: 40px; width: 80%; ">
+        <a style="font-size:2em ; color: black;">Create a report</a>
         <br><br>
-        <a style="font-size:0.9em; color: black;">{{currentDMCA}}</a>
-        <br><br><br>
-        <a style="font-size:2em; color: black;">Takedown Policy</a>
+        <a style="font-size:0.9em; color: black;">Report types: infringement, dmca, takedown requests</a>
+           
         <br><br>
-        <a style="font-size:0.9em; color: black;">{{currentTakedown}}</a>
-</div>
-
-<div *ngIf="this._sharedData.getEmail() == 'root' && showingDMCA" class = "row paper" style="padding: 40px; width: 80%;" >
-    <a style="font-size:3em; color: grey;">Edit DMCA & takedown policy</a>
-        <br><br>
-        <textarea type="text"  class="materialize-textarea" style="height:10px;" placeholder="Enter new dmca"  name="desc" #dmca required></textarea>
+        <input type="text" placeholder="Enter report type"  name="desc" #type>
 
         <br><br>
-        <textarea type="text"  class="materialize-textarea" style="height:10px;" placeholder="Enter new takedown" name="desc" #take required></textarea>
+        <input type="text" placeholder="Enter offending collection, or link" name="desc" #name>
+
+        <br><br>
+        <textarea type="text" style="height:10px;" class="materialize-textarea" placeholder="Enter report description"  name="desc" #desc></textarea>
+        
+        <br><br>
+        <input type="text" placeholder="Enter your email"  name="desc" #email>
 
 
+        <br><br>
         <div style="text-align: center; padding-bottom: 20px;">
-            <button class="btn waves-effect waves-light red accent-3" type="submit" name="action" (click)="postChangedDMCA(dmca.value, take.value)">Submit new policies</button>
+            <button class="btn waves-effect waves-light red accent-3" type="submit" name="action" (click)="submitReport(type.value, name.value, desc.value, email.value)">Submit Report</button>
+            <br><br>
+            {{reportError}}
         </div>
+       
 </div>
-

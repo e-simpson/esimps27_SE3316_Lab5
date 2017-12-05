@@ -27,6 +27,7 @@ var User = require("./models/user")
 var Collection = require("./models/collection")
 var Policy = require("./models/policy")
 var DMCA = require("./models/dmca")
+var Report = require("./models/report")
 //=====================================
 
 
@@ -108,12 +109,12 @@ router.route('/user')
             res.send(users);
         });
     });
-    // .delete(function(req, res) {
-    //     User.remove({}, function(err) {
-    //         if (err) { console.log(err); }
-    //         else { res.json({ "message": "success" }); }
-    //     });
-    // });
+// .delete(function(req, res) {
+//     User.remove({}, function(err) {
+//         if (err) { console.log(err); }
+//         else { res.json({ "message": "success" }); }
+//     });
+// });
 
 
 router.route('/verify/:token')
@@ -270,8 +271,11 @@ router.route('/collection/editimages')
             collection.images.push(req.body.link);
 
             collection.save(function(err) {
-                if (err) { res.send(err);
-                    console.log(err); return; }
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                    return;
+                }
                 res.json({ "message": "success.", "code": 200, "function": "addImage", "name": collection.name });
                 console.log('[ADDED IMAGE TO COLLECTION] ' + req.body.link + collection._id + " by " + collection.owner);
             });
@@ -285,8 +289,11 @@ router.route('/collection/editimages')
             collection.images.pullOne(req.body["link"]);
 
             collection.save(function(err) {
-                if (err) { res.send(err);
-                    console.log(err); return; }
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                    return;
+                }
                 res.json({ "message": "success.", "code": 200, "function": "removeImage" });
                 console.log('[REMOVED IMAGE FROM COLLECTION] ' + collection._id + " by " + collection.owner);
             });
@@ -332,19 +339,24 @@ router.route('/rate')
     });
 
 
+
+
 router.route('/policy')
     .post(function(req, res) {
         Policy.remove({}, function(err) {
-            if (err) { console.log(err);}
+            if (err) { console.log(err); }
         });
-        
+
         var policy = new Policy();
 
         policy.security = req.body.security;
         policy.privacy = req.body.privacy;
         policy.save(function(err) {
-            if (err) { res.send(err);
-                console.log(err); return; }
+            if (err) {
+                res.send(err);
+                console.log(err);
+                return;
+            }
             res.json({ "message": "success", "code": 200, "function": "policyChange" });
             console.log('[WRITING POLICY]');
         });
@@ -356,25 +368,28 @@ router.route('/policy')
                 console.log("error: " + err);
                 res.send(err);
             }
-            
+
 
             res.send(policy);
         });
     });
-    
+
 router.route('/dmca')
     .post(function(req, res) {
         DMCA.remove({}, function(err) {
-            if (err) { console.log(err);}
+            if (err) { console.log(err); }
         });
-        
+
         var dmca = new DMCA();
 
         dmca.dmca = req.body.dmca;
         dmca.takedown = req.body.takedown;
         dmca.save(function(err) {
-            if (err) { res.send(err);
-                console.log(err); return; }
+            if (err) {
+                res.send(err);
+                console.log(err);
+                return;
+            }
             res.json({ "message": "success", "code": 200, "function": "dmcaChange" });
             console.log('[WRITING DMCA]');
         });
@@ -386,11 +401,75 @@ router.route('/dmca')
                 console.log("error: " + err);
                 res.send(err);
             }
-            
+
 
             res.send(dmca);
         });
-    });    
+    });
+
+
+
+
+router.route('/report')
+    .post(function(req, res) {
+        if (req.body.id) {
+            Collection.findOne({ _id: req.body.id }, function(err, collection) {
+                if (err) { res.send(err); return; }
+
+                collection.flagged = req.body.flagged;
+
+                collection.save(function(err) {
+                    if (err) { res.send(err);
+                        console.log(err); return; }
+                    if (collection.flagged == true) {
+                        console.log('[COLLECTION FLAGGED] ' + collection._id + " by " + collection.owner);
+                    }
+                    else {
+                        console.log('[COLLECTION UNFLAGGED] ' + collection._id + " by " + collection.owner);
+                    }
+                });
+            });
+        }
+
+        var report = new Report();
+        report.type = req.body.type;
+        report.offender = req.body.name + req.body.id;
+        report.reporter = req.body.email;
+        report.desc = req.body.desc;
+        var d = new Date();
+        report.date = d.toString();
+        console.log(report.time);
+        report.save(function(err) {
+            if (err) {
+                res.send(err);
+                console.log(err);
+                return;
+            }
+            res.json({ "message": "success", "code": 200, "function": "report" });
+            console.log('[NEW REPORT TAKEN]');
+        });
+    })
+    .get(function(req, res) {
+        Report.find(function(err, report) {
+            console.log('[SENDING REPORTS] reports: ' + report.length);
+            if (err) {
+                console.log("error: " + err);
+                res.send(err);
+            }
+            res.send(report);
+        });
+    })
+    .delete(function(req, res) {
+        Report.remove({}, function(err) {
+            if (err) { console.log(err); return; }
+            console.log('[DELETED ALL REPORTS]');
+            res.json({ "message": "success" });
+        });
+    });
+
+
+
+
 
 
 

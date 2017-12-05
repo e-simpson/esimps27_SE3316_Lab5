@@ -86,6 +86,8 @@ export class AppbarComponent implements OnInit {
     }
     
     this.searchResults = list;
+    Materialize.toast( list.length + ' results found', 1000, 'rounded')
+
   }
   
   saveOwnedCollections(response){

@@ -51,4 +51,32 @@ export class LoginService {
           callback_fun(data);
       });
     }
+    
+    
+    
+    postFlag(passedid, passedemail, callback_fun){
+      this.http.post('/api/report', {type: "takedown", id: passedid, flagged: true, desc: "clicked flag button", email: passedemail}).subscribe(data => {
+          callback_fun(data);
+      });
+    };
+    postUnflag(passedid, passedemail, callback_fun){
+      this.http.post('/api/report', {type: "untakedown", id: passedid, flagged: false, desc: "clicked unflag button", email: passedemail}).subscribe(data => {
+          callback_fun(data);
+      });
+    };
+    postReport(passedtype, passedname, passeddesc, passedemail, callback_fun){
+      this.http.post('/api/report', {type: passedtype, name: passedname, desc: passeddesc, email: passedemail}).subscribe(data => {
+          callback_fun(data);
+      });
+    };
+    getReports(callback_fun){
+      this.http.get('/api/report').subscribe(data => {
+          callback_fun(data);
+      });
+    };
+    deleteReports(callback_fun){
+      this.http.delete('/api/report').subscribe(data => {
+          callback_fun(data);
+      });
+    };
 }

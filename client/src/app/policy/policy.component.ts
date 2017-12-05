@@ -20,8 +20,56 @@ export class PolicyComponent implements OnInit {
   currentDMCA = "";
   currentTakedown = "";
   
+  showingReports = false;
+  showReportsButtonText = "View Reports";
+  
+  showingInstructions = false;
+  showInstructionsButtonText = "SHOW ADMIN INSTRUCTIONS";
+
+  showingReportCreate = false;
+  showReportButtonText = "File a report";
+  reportError = "";
+  
+  currentReports = [];
+  
+  
   constructor(private _loginService: LoginService, private _sharedData: SharedDataService) { }
   
+  
+  toggleReportCreate(){
+    if (this.showingReportCreate == true){
+      this.showingReportCreate = false;
+      this.showReportButtonText = "File a report";
+    }
+    else{
+      this.showingReportCreate = true;
+      this.showReportButtonText = "Cancel report";
+    }
+  }
+  
+  
+  toggleViewReports(){
+    if (this.showingReports == true){
+      this.showingReports = false;
+      this.showReportsButtonText = "View reports";
+    }
+    else{
+      this._loginService.getReports(this.getReportsReponse.bind(this));
+      this.showingReports = true;
+      this.showReportsButtonText = "Hide reports";
+    }
+  }
+  
+  toggleInstructions(){
+    if (this.showingInstructions == true){
+      this.showingInstructions = false;
+      this.showInstructionsButtonText = "SHOW ADMIN INSTRUCTIONS";
+    }
+    else{
+      this.showingInstructions = true;
+      this.showInstructionsButtonText = "HIDE ADMIN INSTRUCTIONS";
+    }
+  }
   
   togglePolicy(){
     if (this.showingPolicy == true){
@@ -47,6 +95,8 @@ export class PolicyComponent implements OnInit {
   
   
   
+  
+  
   getPolicyResponse(data){
     this.currentPrivacyPolicy = data[0].privacy;
     this.currentSecurityPolicy = data[0].security;
@@ -56,10 +106,12 @@ export class PolicyComponent implements OnInit {
       this._loginService.postNewPolicy(security, privacy, this.getPolicyResponse.bind(this));
   }
   postPolicyResponse(data){
-    if(res.code == 200 && res.function == "policyChange"){
+    if(data.code == 200 && data.function == "policyChange"){
       Materialize.toast('Policy change successful! Please reload the page.', 3000, 'rounded')
     }
   }
+  
+  
   
    
   getDMCAResponse(data){
@@ -77,6 +129,35 @@ export class PolicyComponent implements OnInit {
   }
   
   
+  
+  submitReport(type, name, desc, email) {
+    if (type == ""){
+      this.reportError = "Please enter a report type.";
+      return;
+    }
+    else if (name == ""){
+      this.reportError = "Please enter a link or offending collection name.";
+      return;
+    }
+    else if (desc == ""){
+      this.reportError = "Please enter a description.";
+      return;
+    }
+    else if (email == ""){
+      this.reportError = "Please enter a valid email.";
+      return;
+    }
+    
+    this.reportError = ""
+    this._loginService.postReport(type, name, desc, email, this.submitReportResponse.bind(this));
+  }
+  submitReportResponse(){Materialize.toast('Report submitted. Thank you.', 3000, 'rounded');}
+  
+  getReportsReponse(response){this.currentReports = response;}
+  
+  deleteAllReports(){this._loginService.deleteReports(this.deleteReportsResponse.bind(this));}
+  deleteReportsResponse(){Materialize.toast('All reports deleted.', 3000, 'rounded');}
+
   
   ngOnInit() {
     this._loginService.getPolicies(this.getPolicyResponse.bind(this));

@@ -145,6 +145,21 @@ export class ImagesComponent implements OnInit {
   
   
   
+  submitFlag(collectionID){
+    this._loginService.postFlag(collectionID, this._sharedData.getEmail(), this.flagResponse.bind(this));
+  }
+  flagResponse(data){
+    Materialize.toast('Takedown Successful!', 4000, 'rounded');
+  }
+  
+  
+  submitUnflag(collectionID){
+    this._loginService.postUnflag(collectionID, this._sharedData.getEmail(), this.unflagResponse.bind(this));
+  }
+  unflagResponse(data){
+    Materialize.toast('Flag removed!', 4000, 'rounded');
+  }
+  
   
   authenticationResponse(res){
     if(res && res.code == 200 && res.function == "auth"){
