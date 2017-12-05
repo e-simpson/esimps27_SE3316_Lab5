@@ -1,11 +1,9 @@
 <div style="padding: 40px; padding-bottom:0px;">
     <div style="font-size:3em; color: black;">Public collections </div>
 
-    <div *ngFor="let collection of currentPublicCollections" style="padding: 20px;">
-        
-        <div *ngIf="collection.flagged == false || collection.owner == this._sharedData.getEmail() || this._sharedData.getEmail() == 'root'" >
+    <div *ngFor="let collection of currentPublicCollections" >
+        <div *ngIf="collection.flagged == false || collection.owner == this._sharedData.getEmail() || this._sharedData.getEmail() == 'root'" style="padding: 20px;">
             
-    
             <a style="font-size:2em; color: black; text-decoration: underline; color: #325fc9; cursor: pointer;" (click)="openCollection(collection._id)">{{collection.name}}</a>
             <a style="font-size:2em; padding-left: 20px; color: grey;">{{collection.rating}} Stars</a>
             <a style="font-size:2em; color: #c9c9c9; float:right;">{{collection.length}} Images</a>
